@@ -1,0 +1,20 @@
+# Build output
+target/
+out/
+dependency-reduced-pom.xml
+
+# IDE (IntelliJ)
+.idea/
+*.iml
+
+# Cache
+guid-index.cache
+
+# Data / generated
+backup/
+work/
+docs/map_export/
+
+# OS junk
+.DS_Store
+Thumbs.db
