@@ -13,7 +13,7 @@
     <description>Tool đặt NPC/quái/cổng trên map, ghi map_info_config (MySQL). Đọc asset client, zero client code.</description>
 
     <properties>
-        <maven.compiler.release>22</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

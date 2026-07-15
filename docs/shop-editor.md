@@ -4,27 +4,29 @@ Quản lý shop trong tool: sửa tab shop + thêm/xóa/sửa item trong shop.
 
 ## Schema (verify từ DB thật bằng `cols`)
 
-### `shop_type_config` — 1 tab cửa hàng
+> ⚠ **Server đã gộp shop về 1 BẢNG `shop`** (mỗi dòng = 1 tab + toàn bộ item nhúng JSON, giống NroBlue). Bảng cũ `shop_type_config` + `shop_item_config` server GIỮ LÀM BACKUP, không còn load. Tool đọc/ghi thẳng bảng `shop`.
+
+### `shop` — 1 tab cửa hàng (kèm toàn bộ item)
 | Cột | Ý nghĩa |
 |---|---|
-| `id` (PK) | **Trùng enum `TypeShop` client (1-18) — KHÔNG tạo/xóa/đổi id** (client hardcode, thêm type = build lại client) |
+| `id` (PK, gán tay) | Id tab. **Trùng enum `TypeShop` client — KHÔNG tạo/xóa/đổi id** (client hardcode, thêm type = build lại client) |
+| `type` | Loại shop (parity NroBlue). Runtime chưa phân nhánh, mặc định 0 — tool KHÔNG động vào |
 | `shop_name` | Tên tab |
 | `mission_req` | Nhiệm vụ tối thiểu để tab hiện |
 | `npcs` | JSON array int `[2,26,31]` — npcId mở shop này |
-| `promote_item` | Client dùng, server không đọc |
+| `items` (LONGTEXT) | JSON array item của tab — xem entity server `ShopItemJson` (dưới) |
 
-### `shop_item_config` — 1 item trong tab
-| Cột | Ý nghĩa |
+### `shop.items` — mỗi phần tử = 1 item (map entity `ShopItemJson`)
+| Field JSON | Ý nghĩa |
 |---|---|
-| `ID` (PK auto) | Id client gửi khi mua — **read-only** |
-| `shop_type_id` | FK logic → shop_type_config.id |
-| `shop_slot` | Vị trí (hiện chưa sort cả 2 phía) |
-| `class` | -1=tất cả, 0=Trái Đất, 1=Namek, 2=Saiyan |
-| `info_id` | → item_info_config.id (PHẢI tồn tại, không client NRE) |
-| `limit_type` | 0=không, 1=ngày, 2=tuần, 3=tháng |
-| `limit` | Lượt mua/kỳ, ≤0 = vô hạn. ⚠ keyword MySQL → backtick |
-| `price` | JSON `[{"key":<tiền>,"value":<giá>}]`. key: 1=Vàng, 2=Ngọc xanh, 3=Hồng ngọc. ⚠ **rỗng/hỏng = item FREE** (server không check) — editor bắt buộc validate ≥1 pair, value>0. UI client chỉ hiện pair đầu |
-| `name`, `duration`, `item_id` | Server game không đọc — giữ nguyên |
+| `id` | Id client gửi khi mua — tool tự sinh (max id toàn shop + 1), **phải duy nhất** |
+| `infoId` | → item_info_config.id (PHẢI tồn tại, không client NRE) |
+| `shopSlot` | Vị trí hiển thị |
+| `clazz` | -1=tất cả, 0=Trái Đất, 1=Namek, 2=Saiyan |
+| `limitType` | 0=không, 1=ngày, 2=tuần, 3=tháng |
+| `limit` | Lượt mua/kỳ, ≤0 = vô hạn |
+| `prices` | JSON `[{"key":<tiền>,"value":<giá>}]`. key: 1=Vàng, 2=Ngọc xanh, 3=Hồng ngọc. ⚠ **rỗng/hỏng = item FREE** (server không check) — editor bắt buộc validate ≥1 pair, value>0. UI client chỉ hiện pair đầu |
+| `name` | Tên item lưu kèm cho dễ đọc — **server bỏ qua** khi load |
 
 ### `item_info_config` — template item (picker)
 `id` (gán tay), `name`, `item_type`, `quality`... Icon client = sprite atlas tên theo id (tool chưa render icon item — phase sau).
@@ -33,8 +35,8 @@ Quản lý shop trong tool: sửa tab shop + thêm/xóa/sửa item trong shop.
 `table_name` PK, `version`, `last_op`, `last_changed_at`. Sau khi sửa shop → bump version 2 bảng để client tải config mới.
 
 ## Flow deploy sau khi sửa
-1. Tool ghi DB (backup trước — `backup/shop_{ts}.bak.json`)
-2. Tool bump `version_tracker` (`shop_item_config` + `shop_type_config`)
+1. Tool ghi DB — read-modify-write cột `shop.items` (backup bảng `shop` trước — `backup/shop_{ts}.bak.json`)
+2. Tool bump `version_tracker` (table_name = `shop`)
 3. ⚠ **Restart game server** — `ShopManager` chỉ load lúc boot, không reload runtime
 4. ServerConfig có endpoint reload `POST /api/v2/configs/reload` (chưa gọi tự động từ tool)
 
@@ -46,7 +48,7 @@ Quản lý shop trong tool: sửa tab shop + thêm/xóa/sửa item trong shop.
 
 ## Trạng thái
 - [x] Khám phá schema (server entities + verify DB cols)
-- [x] `ShopDao`: types/items/itemInfos, insert/update/delete item, updateType, validate price (chặn FREE), backup 2 bảng, bump version_tracker
+- [x] `ShopDao`: đọc/ghi 1 bảng `shop` (item nhúng cột JSON `items`) — types/items/itemInfos, insert/update/delete item (read-modify-write JSON), updateType, validate price (chặn FREE), backup bảng `shop`, bump version_tracker
 - [x] `ShopEditorFrame`: trái=list tab (sửa name/mission/npcs), phải=bảng item + dialog Thêm/Sửa/Xóa (item picker, giá+loại tiền, limit, hành tinh)
 - [x] Nút 🛒 Shop Editor (section Shop) + lệnh headless `shoptest`
 - [x] Verify DB thật: 22 tab, 52 item tab 1, 909 item template — SQL chạy đúng
