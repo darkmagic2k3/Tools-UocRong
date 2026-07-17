@@ -74,6 +74,7 @@ public class MapToolApp {
                 com.apex.maptool.ui.Theme.apply();
                 try {
                     ToolConfig ec = new ToolConfig();
+                    warmUpDb(ec);
                     var f = new com.apex.maptool.ui.EquipEditorFrame(
                             new com.apex.maptool.db.EquipDao(new com.apex.maptool.db.Db(ec)),
                             new com.apex.maptool.db.AttrNames(ec.serverRepo()));
@@ -89,6 +90,7 @@ public class MapToolApp {
                 com.apex.maptool.ui.Theme.apply();
                 try {
                     ToolConfig sc = new ToolConfig();
+                    warmUpDb(sc);
                     var sdb = new com.apex.maptool.db.Db(sc);
                     var sInfo = new com.apex.maptool.db.InfoDao(sdb);
                     var npcList = sInfo.npcs();
@@ -98,7 +100,8 @@ public class MapToolApp {
                     for (var n : npcList) mm.put(n.id(), n.spinId());
                     sr.setNpcModelMap(mm);
                     var f = new com.apex.maptool.ui.ShopEditorFrame(
-                            new com.apex.maptool.db.ShopDao(sdb), npcList, sr::npc);
+                            new com.apex.maptool.db.ShopDao(sdb), npcList, sr::npc,
+                            new com.apex.maptool.db.EquipDao(sdb), new com.apex.maptool.db.AttrNames(sc.serverRepo()));
                     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     f.setLocationRelativeTo(null);
                     f.setVisible(true);
@@ -118,8 +121,17 @@ public class MapToolApp {
     private static void launchLauncher() {
         com.apex.maptool.ui.Theme.apply();
         ToolConfig cfg = new ToolConfig();
-        var mf = new com.apex.maptool.ui.MainFrame(cfg, desktop -> new MapToolApp().startInDesktop(desktop));
+        warmUpDb(cfg);   // mở sẵn pool DB ở luồng nền → bấm tool lần đầu không chờ
+        var mf = new com.apex.maptool.ui.MainFrame(cfg, () -> new MapToolApp().startEmbedded());
         mf.setVisible(true);
+        SwingUtilities.invokeLater(mf::openDefaultTool);   // mở sẵn Shop như demo
+    }
+
+    /** Warm-up pool DB ở luồng nền (connection remote mất ~3.5s để mở — trả trước, ngoài EDT). */
+    private static void warmUpDb(ToolConfig cfg) {
+        Thread t = new Thread(() -> new com.apex.maptool.db.Db(cfg).warmUp(), "db-warmup");
+        t.setDaemon(true);
+        t.start();
     }
 
     /** Diag: enemy id ↔ spin_id ↔ icon/spine nào tồn tại. */
@@ -296,6 +308,15 @@ public class MapToolApp {
         selectMapCombo(1);
         loadMap(1);
         return inf;
+    }
+
+    /** Map editor dạng CARD nhúng thẳng vào vỏ app (CardLayout — không dùng MDI). */
+    public JComponent startEmbedded() {
+        if (!initCore()) return null;
+        JPanel root = buildRoot();
+        selectMapCombo(1);
+        loadMap(1);
+        return root;
     }
 
     /** Init nặng: GUID index (fatal) + DB (non-fatal). Trả false nếu không chạy được. */

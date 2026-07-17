@@ -67,6 +67,24 @@ public final class EquipDao {
         bumpVersion();
     }
 
+    /**
+     * Ghi option (info_buff) cho item: đã có row → chỉ cập nhật info_buff (giữ nguyên cột khác);
+     * chưa có → INSERT row mới (id, name, info_buff; các cột int còn lại = 0). Dùng cho item chưa có bảng chỉ số.
+     */
+    public void upsertOptions(int id, String name, String infoBuff) throws SQLException {
+        backup();
+        String sql = "INSERT INTO equip_info (id, name, info_buff, `rank`, type_level, type, type_skin, max_star, max_level, target_chuyen_hoa, time, updated_at) "
+                + "VALUES (?,?,?,0,0,0,0,0,0,0,0,NOW()) "
+                + "ON DUPLICATE KEY UPDATE info_buff=VALUES(info_buff), name=COALESCE(name, VALUES(name)), updated_at=NOW()";
+        try (Connection c = db.open(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.setString(2, name);
+            ps.setString(3, infoBuff);
+            System.out.println("[EquipDao] upsertOptions " + id + " rows=" + ps.executeUpdate());
+        }
+        bumpVersion();
+    }
+
     private void backup() {
         try (Connection c = db.open(); Statement st = c.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM equip_info")) {

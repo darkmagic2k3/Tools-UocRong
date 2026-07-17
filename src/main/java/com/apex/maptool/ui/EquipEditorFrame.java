@@ -26,12 +26,12 @@ import java.util.List;
  */
 public final class EquipEditorFrame extends JFrame {
 
-    private static final Font F12 = new Font("SansSerif", Font.PLAIN, 12);
-    private static final Font F13 = new Font("SansSerif", Font.BOLD, 13);
-    private static final Color GREEN = new Color(46, 139, 87);
-    private static final Color BLUE = new Color(70, 130, 180);
-    private static final Color RED = new Color(205, 92, 92);
-    private static final Color ORANGE = new Color(210, 140, 30);
+    private static final Font F12 = Theme.font(13, Font.PLAIN);
+    private static final Font F13 = Theme.font(13, Font.BOLD);
+    private static final Color GREEN = Theme.GREEN;
+    private static final Color BLUE = Theme.BLUE;
+    private static final Color RED = Theme.RED;
+    private static final Color ORANGE = Theme.ACCENT;
 
     private final EquipDao dao;
     private final AttrNames attrs;
@@ -116,11 +116,14 @@ public final class EquipEditorFrame extends JFrame {
         // ── CENTER: bảng equip ──
         tblEquip = new JTable();
         tblEquip.setFont(F12);
-        tblEquip.setRowHeight(26);
+        tblEquip.setRowHeight(32);
         tblEquip.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblEquip.getTableHeader().setFont(F13);
-        tblEquip.setShowGrid(true);
-        tblEquip.setGridColor(new Color(60, 60, 60));
+        tblEquip.getTableHeader().setFont(Theme.font(11, Font.BOLD));
+        tblEquip.getTableHeader().setForeground(Theme.TEXT_MUTED);
+        tblEquip.setShowGrid(false);
+        tblEquip.setShowHorizontalLines(true);
+        tblEquip.setGridColor(Theme.DIVIDER);
+        tblEquip.setIntercellSpacing(new Dimension(0, 1));
         modelEquip = new DefaultTableModel(new Object[]{"ID", "Tên", "Chỉ số", "Random", "Star", "Lv", "Hạn(ngày)"}, 0) {
             @Override public boolean isCellEditable(int r, int col) { return false; }
         };
@@ -153,10 +156,11 @@ public final class EquipEditorFrame extends JFrame {
 
         JLabel status = new JLabel("  ⚠ Ghi thẳng DB (backup ở backup/) — sửa xong RESTART game server. Tên buff đọc từ source server ("
                 + attrs.size() + " buff).");
-        status.setForeground(new Color(255, 190, 90));
+        status.setForeground(new Color(0xe0, 0xc9, 0x8a));
+        status.setFont(Theme.font(12, Font.PLAIN));
         status.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(70, 70, 90)),
-                BorderFactory.createEmptyBorder(4, 6, 4, 6)));
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Theme.BORDER_SOFT),
+                BorderFactory.createEmptyBorder(7, 10, 7, 10)));
         add(status, BorderLayout.SOUTH);
 
         load();
@@ -259,13 +263,33 @@ public final class EquipEditorFrame extends JFrame {
     }
 
     // ─── data ──────────────────────────────────────────────────
+    /** Load equip_info Ở LUỒNG NỀN (SwingWorker) → không đơ UI khi mở/Reload. */
     private void load() {
-        all.clear();
-        try { all.addAll(dao.all()); }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Load equip_info fail:\n" + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-        refillEquipTable();
+        getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        new SwingWorker<List<EquipInfo>, Void>() {
+            @Override protected List<EquipInfo> doInBackground() throws Exception {
+                return dao.all();
+            }
+            @Override protected void done() {
+                try {
+                    all.clear();
+                    all.addAll(get());
+                    refillEquipTable();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(EquipEditorFrame.this,
+                            "Load equip_info fail:\n" + rootMsg(e), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    getContentPane().setCursor(Cursor.getDefaultCursor());
+                }
+            }
+        }.execute();
+    }
+
+    /** Lấy message gốc (bóc ExecutionException của SwingWorker). */
+    private static String rootMsg(Throwable e) {
+        Throwable c = e;
+        while (c.getCause() != null) c = c.getCause();
+        return c.getMessage() != null ? c.getMessage() : c.toString();
     }
 
     private void refillEquipTable() {
@@ -361,16 +385,9 @@ public final class EquipEditorFrame extends JFrame {
         return l;
     }
 
+    /** Nút tint theo Theme dark+amber. */
     private static JButton mkBtn(String text, Color bg, Runnable r) {
-        JButton b = new JButton(text);
-        b.setBackground(bg);
-        b.setForeground(Color.WHITE);
-        b.setFont(new Font("SansSerif", Font.BOLD, 13));
-        b.setFocusPainted(false);
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        b.setPreferredSize(new Dimension(110, 34));
-        b.addActionListener(e -> r.run());
-        return b;
+        return Theme.tint(text, bg, 34, e -> r.run());
     }
 
     /**
