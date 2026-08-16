@@ -48,9 +48,9 @@ public final class EquipEditorFrame extends JFrame {
     private final BuffTableModel mainBuff = new BuffTableModel();
     private final BuffTableModel randomBuff = new BuffTableModel();
     private JTable tblMain, tblRandom;
-    private final JSpinner spStar = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));
-    private final JSpinner spLevel = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));
-    private final JSpinner spTime = new JSpinner(new SpinnerNumberModel(0, 0, 36500, 1));
+    private final JSpinner spStar = Theme.spin(0, 0, 99);
+    private final JSpinner spLevel = Theme.spin(0, 0, 99);
+    private final JSpinner spTime = Theme.spin(0, 0, 36500);
 
     public EquipEditorFrame(EquipDao dao, AttrNames attrs) {
         super("UR Tools - Chỉ số trang bị");
@@ -154,8 +154,8 @@ public final class EquipEditorFrame extends JFrame {
         root.add(new JScrollPane(tblEquip), BorderLayout.CENTER);
         add(root, BorderLayout.CENTER);
 
-        JLabel status = new JLabel("  ⚠ Ghi thẳng DB (backup ở backup/) — sửa xong RESTART game server. Tên buff đọc từ source server ("
-                + attrs.size() + " buff).");
+        JLabel status = new JLabel("  ⚠ Ghi thẳng DB (backup ở backup/) — sửa xong RESTART game server. Option: "
+                + attrs.sourceLabel() + ".");
         status.setForeground(new Color(0xe0, 0xc9, 0x8a));
         status.setFont(Theme.font(12, Font.PLAIN));
         status.setBorder(BorderFactory.createCompoundBorder(
@@ -225,7 +225,7 @@ public final class EquipEditorFrame extends JFrame {
     private Integer pickBuff() {
         var entries = attrs.entries();
         if (entries.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không đọc được enum ItemAttribute từ server repo\n(check server.repo trong config.properties)",
+            JOptionPane.showMessageDialog(this, attrs.errorText(),
                     "UR Tools - Thông báo", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -342,12 +342,13 @@ public final class EquipEditorFrame extends JFrame {
                 "Buff chính trống — trang bị sẽ KHÔNG có chỉ số. Vẫn lưu?",
                 "UR Tools - Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION) return;
         try {
-            dao.update(e.id, info, rnd, (Integer) spStar.getValue(), (Integer) spLevel.getValue(), (Integer) spTime.getValue());
+            int star = Theme.spinInt(spStar), level = Theme.spinInt(spLevel), time = Theme.spinInt(spTime);
+            dao.update(e.id, info, rnd, star, level, time);
             e.infoBuff = info;
             e.randomBuff = rnd.isBlank() ? null : rnd;
-            e.maxStar = (Integer) spStar.getValue();
-            e.maxLevel = (Integer) spLevel.getValue();
-            e.time = (Integer) spTime.getValue();
+            e.maxStar = star;
+            e.maxLevel = level;
+            e.time = time;
             refillEquipTable();
             JOptionPane.showMessageDialog(this, "Sửa chỉ số thành công!\n(restart game server để áp dụng)",
                     "UR Tools - Thông báo", JOptionPane.INFORMATION_MESSAGE);

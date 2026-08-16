@@ -82,6 +82,49 @@ public final class MapInfoDao {
         return out;
     }
 
+    /**
+     * NPC của MỌI map (1 query) — nguồn để dựng {@code NPCData.json} cho client.
+     * Map nào cột rỗng thì vẫn có khoá với list rỗng, để bên gọi biết map đó tồn tại.
+     */
+    public Map<Integer, List<Marker>> loadAllNpcs() throws SQLException {
+        Map<Integer, List<Marker>> out = new HashMap<>();
+        String sql = "SELECT id, list_npcs FROM map_info_config";
+        try (Connection c = db.open(); Statement st = c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                List<Marker> ms = new ArrayList<>();
+                addMarkers(ms, rs.getString("list_npcs"), Marker.Kind.NPC);
+                out.put(rs.getInt("id"), ms);
+            }
+        }
+        return out;
+    }
+
+    /** 4 cột JSON THÔ của 1 map — để đối chiếu round-trip (xuất SQL rồi chạy lại phải là no-op). */
+    public Map<String, String> loadRawColumns(int mapId) throws SQLException {
+        Map<String, String> out = new HashMap<>();
+        String sql = "SELECT list_npcs, list_enemies, list_gate_way, list_arrive_position FROM map_info_config WHERE id=?";
+        try (Connection c = db.open(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, mapId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return out;
+                for (String col : new String[]{"list_npcs", "list_enemies", "list_gate_way", "list_arrive_position"}) {
+                    out.put(col, rs.getString(col));
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Tên map theo id (cho chú thích trong file SQL). */
+    public Map<Integer, String> loadMapNames() throws SQLException {
+        Map<Integer, String> out = new HashMap<>();
+        try (Connection c = db.open(); Statement st = c.createStatement();
+             ResultSet rs = st.executeQuery("SELECT id, name FROM map_info_config")) {
+            while (rs.next()) out.put(rs.getInt("id"), rs.getString("name"));
+        }
+        return out;
+    }
+
     /** Đếm nhanh quái/NPC/cổng của MỌI map (1 query). Trả mapId → {nEnemy, nNpc, nGate}. */
     public Map<Integer, int[]> loadMapStats() throws SQLException {
         Map<Integer, int[]> out = new HashMap<>();
@@ -175,7 +218,11 @@ public final class MapInfoDao {
         }
     }
 
-    private static String toJson(List<Marker> markers, Marker.Kind kind) {
+    /** Bản public của {@link #toJson} cho lệnh tự kiểm round-trip ngoài package. */
+    public static String toJsonPublic(List<Marker> markers, Marker.Kind kind) { return toJson(markers, kind); }
+
+    /** Package-private để {@link MapExport} dựng SQL ra ĐÚNG chuỗi mà {@link #save} ghi vào DB. */
+    static String toJson(List<Marker> markers, Marker.Kind kind) {
         JsonArray arr = new JsonArray();
         for (Marker m : markers) if (m.kind == kind) arr.add(m.raw);
         return GSON.toJson(arr);

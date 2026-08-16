@@ -48,7 +48,7 @@ public final class ShopEditorFrame extends JFrame {
 
     // ── Option (chỉ số) của item: buff trong equip_info theo infoId ──
     private final com.apex.maptool.db.EquipDao equipDao;   // null = tính năng option tắt
-    private final com.apex.maptool.db.AttrNames attrs;     // tên option (enum ItemAttribute)
+    private final com.apex.maptool.db.AttrNames attrs;     // tên option (bảng buff_info DB, dự phòng enum ItemAttribute)
     private final java.util.Map<Integer, com.apex.maptool.db.EquipDao.EquipInfo> equipByInfoId = new java.util.HashMap<>();
 
     // NPC: list (id, tên) + icon — để chọn list thay vì gõ id
@@ -77,9 +77,9 @@ public final class ShopEditorFrame extends JFrame {
             "5 - Điểm tiềm năng", "6 - Điểm năng động", "7 - Guild capsule"};
     private final JComboBox<String> cboCurrency = new JComboBox<>(CURRENCY_BASE);
     private final JTextField txtPrice = new JTextField(8);
-    private final JSpinner spSlot = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
+    private final JSpinner spSlot = Theme.spin(0, 0, 999);
     private final JComboBox<String> cboLimitType = new JComboBox<>(LIMIT_TYPES);
-    private final JSpinner spLimit = new JSpinner(new SpinnerNumberModel(0, 0, 99999, 1));
+    private final JSpinner spLimit = Theme.spin(0, 0, 99999);
     private final JComboBox<String> cboClass = new JComboBox<>(CLASSES);
     private JTable tblItem;
     private DefaultTableModel modelItem;
@@ -559,9 +559,9 @@ public final class ShopEditorFrame extends JFrame {
         it.shopTypeId = curTab().id;
         it.infoId = sel.id();
         it.priceJson = buildPrice();
-        it.shopSlot = (Integer) spSlot.getValue();
+        it.shopSlot = Theme.spinInt(spSlot);
         it.limitType = cboLimitType.getSelectedIndex();
-        it.limit = (Integer) spLimit.getValue();
+        it.limit = Theme.spinInt(spLimit);
         it.clazz = cboClass.getSelectedIndex() - 1;
         return it;
     }
@@ -620,6 +620,8 @@ public final class ShopEditorFrame extends JFrame {
                 it.limitType = src.limitType;
                 it.limit = src.limit;
                 it.clazz = src.clazz;
+                it.infoBuff = src.infoBuff;         // copy luôn chỉ số riêng của entry
+                it.randomBuff = src.randomBuff;
                 dao.insertItem(it);
                 n++;
             }
@@ -724,7 +726,7 @@ public final class ShopEditorFrame extends JFrame {
                 itemRowPriceKey.add(firstPriceKey(it.priceJson));
                 modelItem.addRow(new Object[]{it.id, itemLabel(it.infoId),
                         priceText(it.priceJson), it.shopSlot, limitLabel(it), classLabel(it.clazz),
-                        optionSummary(it.infoId)});
+                        optionSummary(it)});
             }
         } catch (Exception e) { warn("Load items fail:\n" + e.getMessage()); }
     }
@@ -748,7 +750,7 @@ public final class ShopEditorFrame extends JFrame {
     /** Cập nhật lại cột Option của bảng item (sau khi sửa equip_info). */
     private void refreshOptionColumn() {
         for (int i = 0; i < itemRows.size() && i < modelItem.getRowCount(); i++)
-            modelItem.setValueAt(optionSummary(itemRows.get(i).infoId), i, 6);
+            modelItem.setValueAt(optionSummary(itemRows.get(i)), i, 6);
     }
 
     private String itemLabel(int infoId) {
@@ -772,9 +774,12 @@ public final class ShopEditorFrame extends JFrame {
     // ═══════════════ OPTION (chỉ số) của item — equip_info theo infoId ═══════════════
 
     /** Tóm tắt số option của item cho cột "Option" bảng item. */
-    private String optionSummary(int infoId) {
+    private String optionSummary(ShopItem it) {
+        // Entry có chỉ số riêng → SERVER DÙNG CÁI NÀY, template equip_info bị bỏ qua.
+        if (it.infoBuff != null && !it.infoBuff.isBlank())
+            return "★ " + parseOptions(it.infoBuff).size() + " chỉ số riêng";
         if (equipDao == null) return "…";
-        var e = equipByInfoId.get(infoId);
+        var e = equipByInfoId.get(it.infoId);
         if (e == null) return "—";                       // không phải trang bị → không có option
         int n = parseOptions(e.infoBuff).size();
         return n == 0 ? "0 chỉ số" : n + " chỉ số";
@@ -810,14 +815,7 @@ public final class ShopEditorFrame extends JFrame {
 
     /** Tên gọn của option (cắt template "HP + #" → "HP"). */
     private String optName(int type) {
-        String d = attrs != null ? attrs.raw(type) : null;
-        if (d == null) return "option " + type;
-        int cut = d.length();
-        for (String sep : new String[]{" +", " :", ":", "+", "(", "#"}) {
-            int i = d.indexOf(sep);
-            if (i > 0) cut = Math.min(cut, i);
-        }
-        return d.substring(0, cut).trim();
+        return attrs != null ? attrs.shortName(type) : "option " + type;
     }
 
     /** Kết quả hiển thị của 1 option: "5 %" / "+2300" (+bonus nếu có). */
@@ -835,8 +833,15 @@ public final class ShopEditorFrame extends JFrame {
         }
         int r = tblItem.getSelectedRow();
         if (r < 0 || r >= itemRows.size()) { warn("Chọn 1 item trong bảng trước rồi bấm Option."); return; }
-        int infoId = itemRows.get(r).infoId;
-        openOptionDialogFor(infoId);
+        ShopItem row = itemRows.get(r);
+        // Dialog này sửa TEMPLATE equip_info. Entry nào có chỉ số riêng thì server dùng chỉ số riêng
+        // → sửa template không ảnh hưởng gì tới item mua từ dòng shop này. Nói rõ trước khi mở.
+        if (row.infoBuff != null && !row.infoBuff.isBlank())
+            warn("Dòng shop này có CHỈ SỐ RIÊNG (infoBuff = \"" + row.infoBuff + "\").\n\n"
+                    + "Server ưu tiên chỉ số riêng của entry — item mua ở đây KHÔNG lấy chỉ số\n"
+                    + "trong equip_info. Sửa ở dialog sau đây chỉ đổi template dùng chung,\n"
+                    + "muốn đổi riêng dòng này thì sửa cột infoBuff trong shop.items.");
+        openOptionDialogFor(row.infoId);
     }
 
     /** Mở dialog option cho 1 infoId. Chưa có equip_info → tạo placeholder (sẽ INSERT khi lưu). */
@@ -864,7 +869,7 @@ public final class ShopEditorFrame extends JFrame {
      */
     private int[] pickOptionFull(Component parentComp, Integer preType, int preVal, int preBonus) {
         var entries = attrs.entries();
-        if (entries.isEmpty()) { warn("Không đọc được danh sách chỉ số (ItemAttribute) từ server repo."); return null; }
+        if (entries.isEmpty()) { warn(attrs.errorText()); return null; }
         Window owner = parentComp instanceof Window w ? w : SwingUtilities.getWindowAncestor(parentComp);
         JDialog dlg = new JDialog(owner, "Chọn option (chỉ số)", Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -1159,9 +1164,9 @@ public final class ShopEditorFrame extends JFrame {
         private int currencyItemId = -1;
         private final JLabel lblCurItem = new JLabel("(chưa chọn)");
         private final JTextField txtPrice = new JTextField();
-        private final JSpinner spSlot = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
+        private final JSpinner spSlot = Theme.spin(0, 0, 999);
         private final JComboBox<String> cboLimit = new JComboBox<>(LIMIT_TYPES);
-        private final JSpinner spLimit = new JSpinner(new SpinnerNumberModel(0, 0, 99999, 1));
+        private final JSpinner spLimit = Theme.spin(0, 0, 99999);
         private final JComboBox<String> cboClass = new JComboBox<>(CLASSES);
         private final OptionTableModel optModel = new OptionTableModel();
         private final JTable optTable = new JTable(optModel);
@@ -1331,9 +1336,9 @@ public final class ShopEditorFrame extends JFrame {
             JsonArray arr = new JsonArray();
             arr.add(pair(key, value));
             it.priceJson = GSON.toJson(arr);
-            it.shopSlot = (Integer) spSlot.getValue();
+            it.shopSlot = Theme.spinInt(spSlot);
             it.limitType = cboLimit.getSelectedIndex();
-            it.limit = (Integer) spLimit.getValue();
+            it.limit = Theme.spinInt(spLimit);
             it.clazz = cboClass.getSelectedIndex() - 1;
             try {
                 dao.insertItem(it);

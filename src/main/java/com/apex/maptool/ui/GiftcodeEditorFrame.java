@@ -50,15 +50,15 @@ public final class GiftcodeEditorFrame extends JFrame {
     // ── form trái ──
     private final JTextField txtCode = new JTextField(8);
     private final JTextField txtPrefix = new JTextField(8);
-    private final JSpinner spRandLen = new JSpinner(new SpinnerNumberModel(8, 4, 16, 1));
+    private final JSpinner spRandLen = Theme.spin(8, 4, 16);
     private final List<long[]> gifts = new ArrayList<>();   // [infoId, soLuong]
     private final GiftTableModel giftModel = new GiftTableModel();
-    private final JSpinner spMax = new JSpinner(new SpinnerNumberModel(1, 0, 999_999, 1));
+    private final JSpinner spMax = Theme.spin(1, 0, 999_999);
     private final JTextField txtServers = new JTextField("1", 8);
     private final JTextField txtStart = new JTextField(8);
     private final JTextField txtEnd = new JTextField(8);
     private final JComboBox<String> cboType = new JComboBox<>(TYPES);
-    private final JSpinner spIndex = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
+    private final JSpinner spIndex = Theme.spin(0, 0, 999);
 
     private JButton btnAdd, btnAuto, btnDelete, btnReloadGw, btnRefresh, btnCopy;
     private final JLabel lblAutoCount = new JLabel(" ");
@@ -596,7 +596,7 @@ public final class GiftcodeEditorFrame extends JFrame {
         if (!sv.isEmpty() && !sv.matches("\\d+(,\\d+)*"))
             throw new IllegalArgumentException("Server sai format — nhập '1' hoặc '1,2' (trống = mọi server).");
         g.listServerStr = sv;
-        g.max = (Integer) spMax.getValue();
+        g.max = Theme.spinInt(spMax);
         // cột timestamp NOT NULL: trống → mặc định (bắt đầu = bây giờ, hết hạn = 2037 ~ vĩnh viễn)
         g.timeStart = parseTs(txtStart.getText(), "Bắt đầu");
         if (g.timeStart == null) g.timeStart = new java.sql.Timestamp(System.currentTimeMillis());
@@ -605,7 +605,7 @@ public final class GiftcodeEditorFrame extends JFrame {
         if (g.timeEnd.before(g.timeStart))
             throw new IllegalArgumentException("'Hết hạn' đứng trước 'Bắt đầu'.");
         g.typeCode = cboType.getSelectedIndex();
-        g.indexCode = (Integer) spIndex.getValue();
+        g.indexCode = Theme.spinInt(spIndex);
         return g;
     }
 
@@ -622,7 +622,7 @@ public final class GiftcodeEditorFrame extends JFrame {
 
     // ═══════════════ RANDOM CODE ═══════════════
     private String prefix() { return txtPrefix.getText().trim().toLowerCase(); }
-    private int randLen() { return (Integer) spRandLen.getValue(); }
+    private int randLen() { return Theme.spinInt(spRandLen); }
 
     /** Sinh code prefix+random chưa có trong knownCodes (nhớ cả code DB + code vừa tạo). */
     private String nextUniqueCode(String prefix, int len) {

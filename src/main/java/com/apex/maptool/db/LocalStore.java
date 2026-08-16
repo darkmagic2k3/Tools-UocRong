@@ -27,6 +27,26 @@ public final class LocalStore {
     public boolean exists(int mapId) { return Files.exists(file(mapId)); }
     public Path path(int mapId) { return file(mapId).toAbsolutePath(); }
 
+    /** Mọi map đang có bản nháp local (tăng dần theo id). Rỗng nếu chưa lưu file nào. */
+    public List<Integer> draftMapIds() {
+        List<Integer> out = new ArrayList<>();
+        Path dir = Paths.get("work");
+        if (!Files.isDirectory(dir)) return out;
+        try (java.util.stream.Stream<Path> s = Files.list(dir)) {
+            for (Path p : (Iterable<Path>) s::iterator) {
+                String n = p.getFileName().toString();
+                if (!n.startsWith("map_") || !n.endsWith(".json")) continue;
+                try {
+                    out.add(Integer.parseInt(n.substring(4, n.length() - 5)));
+                } catch (NumberFormatException ignored) { /* file lạ trong work/ — bỏ qua */ }
+            }
+        } catch (Exception e) {
+            System.err.println("[LocalStore] quét bản nháp fail: " + e.getMessage());
+        }
+        out.sort(Integer::compareTo);
+        return out;
+    }
+
     public void save(int mapId, List<Marker> markers) throws Exception {
         JsonObject root = new JsonObject();
         root.add("listEnemies", group(markers, Marker.Kind.ENEMY));

@@ -18,3 +18,6 @@ docs/map_export/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Backup .bak do tool Hao Quang tu tao (ngoai Assets)
+.haoquang_backups/

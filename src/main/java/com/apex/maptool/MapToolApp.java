@@ -9,7 +9,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,9 +77,10 @@ public class MapToolApp {
                 try {
                     ToolConfig ec = new ToolConfig();
                     warmUpDb(ec);
+                    var edb = new com.apex.maptool.db.Db(ec);
                     var f = new com.apex.maptool.ui.EquipEditorFrame(
-                            new com.apex.maptool.db.EquipDao(new com.apex.maptool.db.Db(ec)),
-                            new com.apex.maptool.db.AttrNames(ec.serverRepo()));
+                            new com.apex.maptool.db.EquipDao(edb),
+                            new com.apex.maptool.db.AttrNames(ec.serverRepo(), edb));
                     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     f.setLocationRelativeTo(null);
                     f.setVisible(true);
@@ -101,7 +104,7 @@ public class MapToolApp {
                     sr.setNpcModelMap(mm);
                     var f = new com.apex.maptool.ui.ShopEditorFrame(
                             new com.apex.maptool.db.ShopDao(sdb), npcList, sr::npc,
-                            new com.apex.maptool.db.EquipDao(sdb), new com.apex.maptool.db.AttrNames(sc.serverRepo()));
+                            new com.apex.maptool.db.EquipDao(sdb), new com.apex.maptool.db.AttrNames(sc.serverRepo(), sdb));
                     f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     f.setLocationRelativeTo(null);
                     f.setVisible(true);
@@ -109,12 +112,292 @@ public class MapToolApp {
             });
             return;
         }
+        if (args.length > 0 && args[0].equals("layout")) {   // mở thẳng Bố cục Map (debug/chụp UI)
+            int layoutMapId = args.length > 1 ? parseInt(args[1], 1) : 1;
+            SwingUtilities.invokeLater(() -> {
+                com.apex.maptool.ui.Theme.apply();
+                try {
+                    ToolConfig lc = new ToolConfig();
+                    GuidIndex gi = new GuidIndex();
+                    gi.buildOrLoad(lc.assetsRoot(), lc.guidCacheFile());
+                    java.util.List<com.apex.maptool.db.InfoDao.InfoItem> lmaps;
+                    try {
+                        lmaps = new com.apex.maptool.db.InfoDao(new com.apex.maptool.db.Db(lc)).maps();
+                    } catch (Throwable ex) {   // DB lỗi (kể cả thiếu driver/HikariCP trên classpath)
+                        // → vẫn mở tool, chỉ thiếu tên map. Bắt Throwable vì chạy bằng
+                        // "java -cp target/classes" (không có dependency) sẽ ném NoClassDefFoundError.
+                        System.err.println("[layout] danh sách map fail: " + ex);
+                        lmaps = new ArrayList<>();
+                    }
+                    var f = new com.apex.maptool.ui.MapLayoutEditorFrame(
+                            lc, gi, new MaterialResolver(gi), new TextureCache(), lmaps);
+                    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    f.setLocationRelativeTo(null);
+                    f.setVisible(true);
+                    f.loadMap(layoutMapId);
+
+                    // layout <mapId> snap=<png> [sel=<tênNode>] → chọn node rồi chụp và thoát
+                    String snap = null, sel = null;
+                    for (String a : args) {
+                        if (a.startsWith("snap=")) snap = a.substring(5);
+                        else if (a.startsWith("sel=")) sel = a.substring(4);
+                    }
+                    final String selName = sel;
+                    if (snap != null) {
+                        final String png = snap;
+                        new javax.swing.Timer(2500, ev -> {
+                            ((javax.swing.Timer) ev.getSource()).stop();
+                            try {
+                                // loadMap chạy BẤT ĐỒNG BỘ (SwingWorker) → phải chọn node SAU khi
+                                // nó xong, chọn ngay sau loadMap thì scene còn rỗng.
+                                if (selName != null) {
+                                    String got = f.selectNodeByName(selName);
+                                    System.out.println("[layout] chọn node: "
+                                            + (got != null ? got : "KHÔNG THẤY '" + selName + "'"));
+                                }
+                                java.awt.Container cp = f.getContentPane();
+                                java.awt.Component target = cp;
+                                // crop=right → chụp RIÊNG panel thông tin bên phải ở chiều cao ĐẦY
+                                // ĐỦ (cửa sổ bị kẹp theo màn hình nên mục cuối luôn ngoài khung).
+                                if (java.util.Arrays.asList(args).contains("crop=right")) {
+                                    // Nửa phải của cửa sổ + nội dung CAO nhất. Chỉ lấy "phải nhất"
+                                    // là dính mấy scroll pane rỗng cao 1px nằm sát mép.
+                                    int mid = cp.getLocationOnScreen().x + cp.getWidth() / 2;
+                                    JScrollPane best = null;
+                                    int bestH = 0;
+                                    for (JScrollPane sp : allScrolls(cp, new ArrayList<>())) {
+                                        java.awt.Component v = sp.getViewport().getView();
+                                        if (v == null || !sp.isShowing()) continue;
+                                        if (sp.getLocationOnScreen().x < mid) continue;
+                                        int hh = v.getPreferredSize().height;
+                                        if (hh > bestH) { bestH = hh; best = sp; }
+                                    }
+                                    if (best != null && best.getViewport().getView() instanceof JComponent v) {
+                                        v.setSize(v.getPreferredSize());
+                                        layoutDeep(v);
+                                        target = v;
+                                    }
+                                }
+                                java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(
+                                        Math.max(1, target.getWidth()), Math.max(1, target.getHeight()),
+                                        java.awt.image.BufferedImage.TYPE_INT_RGB);
+                                java.awt.Graphics2D g = img.createGraphics();
+                                target.printAll(g);
+                                g.dispose();
+                                javax.imageio.ImageIO.write(img, "png", new java.io.File(png));
+                                System.out.println("[layout] snap " + img.getWidth() + "x" + img.getHeight() + " → " + png);
+                            } catch (Exception ex) { ex.printStackTrace(); }
+                            System.exit(0);
+                        }).start();
+                    }
+                } catch (Exception e) { e.printStackTrace(); System.exit(1); }
+            });
+            return;
+        }
+        if (args.length > 1 && args[0].equals("skelsheet")) {   // bảng thumbnail skeleton (soi ảnh xem trước)
+            new MapToolApp().skelSheet(args);
+            return;
+        }
+        if (args.length > 1 && args[0].equals("layoutbench")) { // ĐO thời gian vẽ 1 khung hình
+            new MapToolApp().layoutBench(args);
+            return;
+        }
+        if (args.length > 1 && args[0].equals("spineadd")) {    // tự kiểm THÊM NODE SPINE (không đụng client)
+            new MapToolApp().spineAddTest(args);
+            return;
+        }
+        if (args.length > 1 && args[0].equals("spineswap")) {   // tự kiểm ĐỔI SKELETON (không đụng client)
+            new MapToolApp().spineSwapTest(args);
+            return;
+        }
+        if (args.length > 2 && args[0].equals("spinesnap")) {   // render 1 skeleton ra PNG để soi mắt
+            // spinesnap <thưMụcSpine> <out.png> [t=<giây>] [noblend]
+            float t = 0f;
+            boolean noBlend = false;
+            for (int i = 3; i < args.length; i++) {
+                if (args[i].startsWith("t=")) t = Float.parseFloat(args[i].substring(2));
+                else if (args[i].equals("noblend")) noBlend = true;
+                else if (args[i].equals("generic")) com.apex.maptool.spine.BlendComposite.FORCE_GENERIC = true;
+            }
+            System.exit(com.apex.maptool.spine.SpineSnap.run(args[1], args[2], t, noBlend));
+            return;
+        }
+        if (args.length > 1 && args[0].equals("uisnap")) {   // chụp giao diện Map Editor ra PNG
+            final String outPng = args[1];
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    com.apex.maptool.ui.Theme.apply();
+                    // uisnap <png> [map=<id>] [w=<px>] [h=<px>] [side]  — token CÓ TÊN cho khỏi lẫn
+                    int snapMap = 1, snapW = 1400, snapH = 900;
+                    for (int i = 2; i < args.length; i++) {
+                        String a = args[i];
+                        if (a.startsWith("map=")) snapMap = parseInt(a.substring(4), 1);
+                        else if (a.startsWith("w=")) snapW = parseInt(a.substring(2), 1400);
+                        else if (a.startsWith("h=")) snapH = parseInt(a.substring(2), 900);
+                    }
+                    JComponent root = new MapToolApp().startEmbedded(snapMap);
+                    if (root == null) { System.err.println("[uisnap] startEmbedded trả null"); System.exit(1); }
+                    JFrame f = new JFrame("uisnap");
+                    f.setContentPane(root);
+                    f.setSize(snapW, snapH);
+                    f.setVisible(true);                       // phải hiện thật thì layout mới đúng
+                    // Chờ layout + vẽ xong 1 nhịp rồi mới chụp, không thì ra ảnh trắng.
+                    new javax.swing.Timer(1500, ev -> {
+                        ((javax.swing.Timer) ev.getSource()).stop();
+                        try {
+                            // "side" = chụp RIÊNG thanh bên ở chiều cao ĐẦY ĐỦ. Cần vì cửa sổ bị
+                            // kẹp theo chiều cao màn hình nên mấy mục cuối luôn nằm ngoài khung.
+                            JComponent target = root;
+                            if (java.util.Arrays.asList(args).contains("side")) {
+                                JScrollPane sp = findTallestScroll(root, null);
+                                if (sp != null && sp.getViewport().getView() instanceof JComponent v) {
+                                    v.setSize(v.getPreferredSize());
+                                    layoutDeep(v);
+                                    target = v;
+                                }
+                            }
+                            java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(
+                                    Math.max(1, target.getWidth()), Math.max(1, target.getHeight()),
+                                    java.awt.image.BufferedImage.TYPE_INT_RGB);
+                            java.awt.Graphics2D g = img.createGraphics();
+                            target.printAll(g);
+                            g.dispose();
+                            javax.imageio.ImageIO.write(img, "png", new java.io.File(outPng));
+                            System.out.println("[uisnap] " + img.getWidth() + "x" + img.getHeight() + " → " + outPng);
+                        } catch (Exception ex) { ex.printStackTrace(); }
+                        System.exit(0);
+                    }).start();
+                } catch (Exception e) { e.printStackTrace(); System.exit(1); }
+            });
+            return;
+        }
+        if (args.length > 2 && args[0].equals("mapexport")) {   // dựng file xuất từ DB (CHỈ ĐỌC)
+            new MapToolApp().mapExportCli(args);
+            return;
+        }
+        if (args.length > 3 && args[0].equals("spinedump")) {   // đối chiếu pose xương với spine-csharp thật
+            System.exit(com.apex.maptool.spine.SpineDump.run(args[1], args[2], args[3]));
+            return;
+        }
+        if (args.length > 0 && args[0].equals("hqtest")) {   // tự test bộ ghi asset Hào Quang (CHỈ ĐỌC client)
+            System.exit(com.apex.maptool.unity.HaoQuangTest.run(args.length > 1 ? args[1] : null));
+            return;
+        }
+        if (args.length > 0 && args[0].equals("pvtest")) {   // tự test Player Viewer (headless, CHỈ ĐỌC)
+            // pvtest [thưMụcGốc] [sốLượng] [fit]  — mặc định <resource>/Player, 12 skeleton
+            String pvRoot = args.length > 1 ? args[1] : null;
+            int pvN = args.length > 2 ? parseInt(args[2], 12) : 12;
+            boolean pvFit = java.util.Arrays.asList(args).contains("fit");
+            System.exit(com.apex.maptool.spine.PlayerViewTest.run(pvRoot, pvN, pvFit));
+            return;
+        }
+        if (args.length > 0 && args[0].equals("player")) {   // mở thẳng Player Viewer (debug / chụp UI)
+            // player [png=<file>] [wait=<ms>] [tab=0|1|2] [anim=<tên>] [bone=<tên>]
+            //   — có png thì chụp giao diện rồi thoát (tab/anim/bone chỉ để chụp đúng chỗ cần soi)
+            final String pvPng = argVal(args, "png=", null);
+            final int pvWait = parseInt(argVal(args, "wait=", "2500"), 2500);
+            final int pvTab = parseInt(argVal(args, "tab=", "0"), 0);
+            final String pvAnim = argVal(args, "anim=", null);
+            final String pvBone = argVal(args, "bone=", null);
+            SwingUtilities.invokeLater(() -> {
+                com.apex.maptool.ui.Theme.apply();
+                try {
+                    var pf = new com.apex.maptool.ui.PlayerViewerFrame(new ToolConfig());
+                    pf.setLocationRelativeTo(null);
+                    pf.setVisible(true);
+                    if (pvPng == null) return;
+                    // Thư mục phải đặt SAU lượt nạp mặc định mà constructor đã xếp hàng, nếu không
+                    // lượt mặc định (mới hơn) sẽ thắng đúng theo bộ đánh số chống-đè của tool.
+                    final String pvFolder = argVal(args, "folder=", null);
+                    new javax.swing.Timer(Math.max(100, pvWait / 6), ev -> {
+                        ((javax.swing.Timer) ev.getSource()).stop();
+                        if (pvFolder != null) pf.loadFolder(pvFolder);
+                        if (argVal(args, "fit=", null) != null) pf.setRealSize(false);
+                    }).start();
+                    // Chọn sau khi skeleton nạp xong (SwingWorker) → hẹn ở nửa thời gian chờ.
+                    new javax.swing.Timer(Math.max(200, pvWait / 2), ev -> {
+                        ((javax.swing.Timer) ev.getSource()).stop();
+                        pf.selectTab(pvTab);
+                        pf.selectAnim(pvAnim);
+                        if (pvBone != null) pf.selectBonePublic(pvBone);
+                        String hqMode = argVal(args, "hqmode=", null);
+                        if (hqMode != null) {
+                            pf.debugHaoQuang(hqMode, argVal(args, "hqback=", null), argVal(args, "hqfront=", null));
+                        }
+                        if (argVal(args, "play=", null) != null) pf.startPlayPublic();
+                    }).start();
+                    // Chờ SwingWorker nạp xong skeleton + vẽ 1 nhịp, không thì chụp ra khung rỗng.
+                    new javax.swing.Timer(pvWait, ev -> {
+                        ((javax.swing.Timer) ev.getSource()).stop();
+                        try {
+                            java.awt.Component t = pf.getContentPane();
+                            var img = new java.awt.image.BufferedImage(Math.max(1, t.getWidth()),
+                                    Math.max(1, t.getHeight()), java.awt.image.BufferedImage.TYPE_INT_RGB);
+                            java.awt.Graphics2D g = img.createGraphics();
+                            t.printAll(g);
+                            g.dispose();
+                            javax.imageio.ImageIO.write(img, "png", new java.io.File(pvPng));
+                            System.out.println("[player] " + img.getWidth() + "x" + img.getHeight() + " → " + pvPng);
+                        } catch (Exception ex) { ex.printStackTrace(); }
+                        System.exit(0);
+                    }).start();
+                } catch (Exception e) { e.printStackTrace(); System.exit(1); }
+            });
+            return;
+        }
+        if (args.length > 0 && args[0].equals("layouttest")) {   // tự test Bố cục Map (headless, KHÔNG đụng file client)
+            int[] ids = new int[Math.max(0, args.length - 1)];
+            for (int i = 1; i < args.length; i++) ids[i - 1] = parseInt(args[i], 1);
+            System.exit(com.apex.maptool.LayoutSelfTest.run(ids));
+            return;
+        }
         // arg đầu là số (map id) → vào thẳng Map Editor (giữ workflow run.bat 1 cũ)
         if (args.length > 0 && args[0].matches("-?\\d+")) {
             SwingUtilities.invokeLater(() -> new MapToolApp().start(args));
             return;
         }
+        if (args.length > 1 && args[0].equals("appsnap")) {   // chụp NGUYÊN vỏ app (kiểm thanh bên)
+            // appsnap <png> [wait=<ms>] [tool=map|shop|layout|equip|gift|player] [size=1600x900]
+            SwingUtilities.invokeLater(() -> snapApp(args[1],
+                    parseInt(argVal(args, "wait=", "4000"), 4000), argVal(args, "tool=", null),
+                    argVal(args, "size=", null)));
+            return;
+        }
         SwingUtilities.invokeLater(MapToolApp::launchLauncher);
+    }
+
+    /**
+     * Chụp cả cửa sổ chính ra PNG rồi thoát. Có vì "app chạy được" KHÔNG chứng minh giao diện lành —
+     * Swing nuốt exception lúc vẽ, nút hỏng chỉ hiện ra ô trống (đúng cái bẫy {@code Theme.btn(null)}).
+     */
+    private static void snapApp(String png, int waitMs, String tool, String size) {
+        com.apex.maptool.ui.Theme.apply();
+        ToolConfig cfg = new ToolConfig();
+        var mf = new com.apex.maptool.ui.MainFrame(cfg, () -> new MapToolApp().startEmbedded());
+        // size=1600x900 → ép đúng cỡ cần soi (checklist handoff: 1600×900 và 1920×1080)
+        if (size != null && size.matches("\\d+x\\d+")) {
+            String[] wh = size.split("x");
+            mf.setExtendedState(java.awt.Frame.NORMAL);
+            mf.setMinimumSize(new java.awt.Dimension(200, 200));
+            mf.setSize(parseInt(wh[0], 1600), parseInt(wh[1], 900));
+            mf.setLocationRelativeTo(null);
+        }
+        mf.setVisible(true);
+        if (tool != null) SwingUtilities.invokeLater(() -> mf.openTool(tool));
+        new javax.swing.Timer(waitMs, ev -> {
+            ((javax.swing.Timer) ev.getSource()).stop();
+            try {
+                java.awt.Component t = mf.getContentPane();
+                var img = new java.awt.image.BufferedImage(Math.max(1, t.getWidth()),
+                        Math.max(1, t.getHeight()), java.awt.image.BufferedImage.TYPE_INT_RGB);
+                java.awt.Graphics2D g = img.createGraphics();
+                t.printAll(g);
+                g.dispose();
+                javax.imageio.ImageIO.write(img, "png", new java.io.File(png));
+                System.out.println("[appsnap] " + img.getWidth() + "x" + img.getHeight() + " → " + png);
+            } catch (Exception ex) { ex.printStackTrace(); }
+            System.exit(0);
+        }).start();
     }
 
     /** Vỏ app kiểu NRS: sidebar chọn tool + desktop MDI. */
@@ -125,6 +408,29 @@ public class MapToolApp {
         var mf = new com.apex.maptool.ui.MainFrame(cfg, () -> new MapToolApp().startEmbedded());
         mf.setVisible(true);
         SwingUtilities.invokeLater(mf::openDefaultTool);   // mở sẵn Shop như demo
+    }
+
+    /** Mọi JScrollPane trong cây component. */
+    private static List<JScrollPane> allScrolls(Component c, List<JScrollPane> out) {
+        if (c instanceof JScrollPane sp) out.add(sp);
+        if (c instanceof Container ct) for (Component k : ct.getComponents()) allScrolls(k, out);
+        return out;
+    }
+
+    /** JScrollPane có nội dung CAO nhất trong cây — chính là thanh bên của Map Editor. */
+    private static JScrollPane findTallestScroll(Component c, JScrollPane best) {
+        if (c instanceof JScrollPane sp && sp.getViewport().getView() != null) {
+            int h = sp.getViewport().getView().getPreferredSize().height;
+            if (best == null || h > best.getViewport().getView().getPreferredSize().height) best = sp;
+        }
+        if (c instanceof Container ct) for (Component k : ct.getComponents()) best = findTallestScroll(k, best);
+        return best;
+    }
+
+    /** Ép layout cả cây con sau khi đổi size thủ công (printAll không tự làm). */
+    private static void layoutDeep(Component c) {
+        c.doLayout();
+        if (c instanceof Container ct) for (Component k : ct.getComponents()) layoutDeep(k);
     }
 
     /** Warm-up pool DB ở luồng nền (connection remote mất ~3.5s để mở — trả trước, ngoài EDT). */
@@ -240,6 +546,410 @@ public class MapToolApp {
         }
     }
 
+    /**
+     * Headless CHỈ ĐỌC: dựng file xuất thẳng từ DB, không mở GUI, không ghi DB.
+     * Dùng để đối chiếu bản xuất với file thật của client trước khi tin nút bấm trên UI.
+     *
+     * <pre>
+     * mapexport npcdata &lt;fileRa&gt;
+     * mapexport sql &lt;mapId&gt; &lt;fileRa&gt;
+     * </pre>
+     */
+    private void mapExportCli(String[] args) {
+        try {
+            var db = new com.apex.maptool.db.Db(cfg);
+            var dao = new com.apex.maptool.db.MapInfoDao(db);
+            String mode = args[1];
+            if (mode.equals("npcdata")) {
+                var all = new java.util.TreeMap<>(dao.loadAllNpcs());
+                boolean merge = args.length > 3 && args[3].equals("merge");
+                String json;
+                if (merge) {
+                    Path cf = clientNpcDataFile();
+                    String oldJson = (cf != null && Files.exists(cf)) ? Files.readString(cf) : null;
+                    if (oldJson == null) { System.err.println("[mapexport] không thấy NPCData.json client để gộp"); System.exit(3); }
+                    var d = com.apex.maptool.db.MapExport.diffNpcData(oldJson, all);
+                    System.out.println("[mapexport] đối chiếu client: giống " + d.same()
+                            + " · khác " + d.changed().size() + " · chỉ-client " + d.onlyOld()
+                            + " (mất " + d.lostNpc() + " NPC nếu ghi đúng-y-DB) · chỉ-DB " + d.onlyNew());
+                    json = com.apex.maptool.db.MapExport.npcDataJsonMerged(all, oldJson);
+                } else {
+                    json = com.apex.maptool.db.MapExport.npcDataJson(all);
+                }
+                Files.writeString(Paths.get(args[2]), json, java.nio.charset.StandardCharsets.UTF_8);
+                System.out.println("[mapexport] NPCData.json ← DB" + (merge ? " + GỘP client" : "") + ": "
+                        + all.size() + " map DB, "
+                        + com.apex.maptool.db.MapExport.countMapsWithNpc(all) + " map có NPC → " + args[2]);
+            } else if (mode.equals("sql")) {
+                int mapId = parseInt(args[2], 1);
+                var row = dao.load(mapId);
+                String sql = com.apex.maptool.db.MapExport.sqlHeader()
+                        + com.apex.maptool.db.MapExport.sqlForMap(mapId, row.name, row.markers);
+                java.nio.file.Files.writeString(java.nio.file.Paths.get(args[3]), sql,
+                        java.nio.charset.StandardCharsets.UTF_8);
+                System.out.println("[mapexport] SQL map " + mapId + " (" + row.markers.size() + " marker) → " + args[3]);
+            } else if (mode.equals("verify")) {
+                // Round-trip: DB → marker → JSON xuất ra. Phải BẰNG cột gốc, nếu không là xuất SQL
+                // gây mất field. Chạy trên MỌI map để chắc, không lấy mẫu.
+                var gson = new com.google.gson.Gson();
+                int nOk = 0, nBad = 0, nEmpty = 0;
+                for (int mapId : dao.loadMapNames().keySet().stream().sorted().toList()) {
+                    var raw = dao.loadRawColumns(mapId);
+                    if (raw.isEmpty()) continue;
+                    var row = dao.load(mapId);
+                    var pairs = new String[][]{
+                            {"list_npcs", com.apex.maptool.db.MapInfoDao.toJsonPublic(row.markers, com.apex.maptool.model.Marker.Kind.NPC)},
+                            {"list_enemies", com.apex.maptool.db.MapInfoDao.toJsonPublic(row.markers, com.apex.maptool.model.Marker.Kind.ENEMY)},
+                            {"list_gate_way", com.apex.maptool.db.MapInfoDao.toJsonPublic(row.markers, com.apex.maptool.model.Marker.Kind.GATEWAY)},
+                            {"list_arrive_position", com.apex.maptool.db.MapInfoDao.toJsonPublic(row.markers, com.apex.maptool.model.Marker.Kind.ARRIVE)},
+                    };
+                    for (String[] p : pairs) {
+                        String before = raw.get(p[0]);
+                        if (before == null || before.isBlank()) { if (!p[1].equals("[]")) { nBad++; System.out.println("  map " + mapId + " " + p[0] + ": cột rỗng nhưng xuất ra " + p[1]); } else nEmpty++; continue; }
+                        var a = gson.fromJson(before, com.google.gson.JsonElement.class);
+                        var b = gson.fromJson(p[1], com.google.gson.JsonElement.class);
+                        if (a.equals(b)) nOk++;
+                        else { nBad++; System.out.println("  map " + mapId + " " + p[0] + " LỆCH\n    DB : " + before + "\n    ra : " + p[1]); }
+                    }
+                }
+                System.out.println("[mapexport verify] cột khớp=" + nOk + " · cột rỗng=" + nEmpty + " · LỆCH=" + nBad);
+                if (nBad > 0) System.exit(1);
+            } else {
+                System.err.println("[mapexport] mode lạ: " + mode);
+                System.exit(2);
+            }
+        } catch (Exception e) {
+            System.err.println("[mapexport] FAIL: " + e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Tự kiểm ĐỔI SKELETON, headless, KHÔNG ĐỤNG file client:
+     * nạp map → đổi skeleton của node Spine đầu tiên (hoặc node chỉ định) → ghi ra file TẠM →
+     * nạp lại file tạm → đối chiếu guid/tên/thư mục có đúng đã đổi không.
+     *
+     * <pre>spineswap &lt;mapId&gt; [tênSkeletonMới] [tênNode]</pre>
+     */
+    private void spineSwapTest(String[] args) {
+        try {
+            int mapId = parseInt(args[1], 13);
+            String wantSkel = args.length > 2 ? args[2] : null;
+            String wantNode = args.length > 3 ? args[3] : null;
+
+            GuidIndex gi = new GuidIndex();
+            gi.buildOrLoad(cfg.assetsRoot(), cfg.guidCacheFile());
+            var cat = new com.apex.maptool.unity.SpineCatalog(gi, cfg.assetsRoot());
+            System.out.println("[spineswap] danh mục skeleton: " + cat.size());
+
+            var loader = new MapSceneLoader(gi, new MaterialResolver(gi), new TextureCache(),
+                    cfg.pixelsPerUnit());
+            Path prefab = cfg.mapPrefab(mapId);
+            MapScene scene = loader.load(prefab, mapId);
+
+            MapScene.Node node = null;
+            for (MapScene.Node n : scene.nodes()) {
+                if (!n.hasFx(MapScene.EffectKind.SPINE)) continue;
+                if (wantNode == null || n.name.contains(wantNode)) { node = n; break; }
+            }
+            if (node == null) { System.err.println("[spineswap] map " + mapId + " không có node Spine nào"); System.exit(3); }
+
+            var oldFx = node.fxOf(MapScene.EffectKind.SPINE);
+            String oldGuid = oldFx.assetGuid, oldName = oldFx.name;
+            System.out.println("[spineswap] node '" + node.name + "' đang dùng '" + oldName + "' guid=" + oldGuid);
+
+            com.apex.maptool.unity.SpineCatalog.Entry target = null;
+            for (var e : cat.all()) {
+                if (e.skeletonGuid.equalsIgnoreCase(oldGuid)) continue;          // phải là cái KHÁC
+                if (wantSkel != null && !e.name.equalsIgnoreCase(wantSkel)) continue;
+                if (e.materialGuid == null) continue;                            // chọn cái đủ material
+                target = e; break;
+            }
+            if (target == null) { System.err.println("[spineswap] không tìm được skeleton đích"); System.exit(3); }
+            System.out.println("[spineswap] đổi sang '" + target.name + "' guid=" + target.skeletonGuid
+                    + " material=" + target.materialGuid + " (" + target.shortPath + ")");
+
+            String err = scene.setSkeleton(node, target);
+            if (err != null) { System.err.println("[spineswap] setSkeleton fail: " + err); System.exit(1); }
+
+            Path tmp = java.nio.file.Files.createTempFile("spineswap-", ".prefab");
+            var res = com.apex.maptool.unity.MapSceneWriter.saveAs(scene, null, tmp);
+            for (String l : res.log) System.out.println("    " + l);
+            System.out.println("[spineswap] ghi ra " + tmp + " · field=" + res.fieldsWritten
+                    + " · cảnh báo=" + res.warnings + " · lỗi=" + res.failed.size());
+
+            // ĐỌC LẠI file vừa ghi — đây mới là bằng chứng, không tin mỗi "đã ghi xong"
+            MapScene re = loader.load(tmp, mapId);
+            MapScene.Node back = null;
+            for (MapScene.Node n : re.nodes()) if (n.goAnchor == node.goAnchor) { back = n; break; }
+            if (back == null) { System.err.println("[spineswap] đọc lại KHÔNG thấy node"); System.exit(1); }
+            var backFx = back.fxOf(MapScene.EffectKind.SPINE);
+            boolean okGuid = target.skeletonGuid.equalsIgnoreCase(backFx.assetGuid);
+            boolean okName = target.name.equals(backFx.name);
+            boolean okFolder = backFx.folder != null && backFx.folder.equals(target.folder);
+            System.out.println("[spineswap] đọc lại: guid=" + backFx.assetGuid + " (" + (okGuid ? "ĐẠT" : "HỎNG") + ")"
+                    + " · tên='" + backFx.name + "' (" + (okName ? "ĐẠT" : "HỎNG") + ")"
+                    + " · thư mục " + (okFolder ? "ĐẠT" : "HỎNG: " + backFx.folder));
+
+            // và phải VẼ được bằng skeleton mới
+            var sc = com.apex.maptool.spine.SpineCharacter.load(backFx.folder);
+            System.out.println("[spineswap] nạp skeleton mới để vẽ: " + (sc != null ? "ĐẠT (bone=" + sc.data.bones.size() + ")" : "HỎNG"));
+
+            java.nio.file.Files.deleteIfExists(tmp);
+            boolean all = okGuid && okName && okFolder && sc != null && res.ok();
+            System.out.println("[spineswap] ===> " + (all ? "TẤT CẢ ĐẠT" : "CÓ MỤC HỎNG"));
+            System.exit(all ? 0 : 1);
+        } catch (Exception e) {
+            System.err.println("[spineswap] FAIL: " + e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Tự kiểm THÊM NODE SPINE, headless, KHÔNG ĐỤNG file client:
+     * nạp map → thêm node Spine mới → ghi ra file TẠM → nạp lại → đối chiếu node có thật,
+     * đúng skeleton, đúng cha, và vẽ được.
+     *
+     * <pre>spineadd &lt;mapId&gt; [tênSkeleton] [tênNodeCha]</pre>
+     */
+    private void spineAddTest(String[] args) {
+        try {
+            int mapId = parseInt(args[1], 13);
+            String wantSkel = args.length > 2 ? args[2] : null;
+            String wantParent = args.length > 3 ? args[3] : null;
+
+            GuidIndex gi = new GuidIndex();
+            gi.buildOrLoad(cfg.assetsRoot(), cfg.guidCacheFile());
+            var cat = new com.apex.maptool.unity.SpineCatalog(gi, cfg.assetsRoot());
+            var loader = new MapSceneLoader(gi, new MaterialResolver(gi), new TextureCache(), cfg.pixelsPerUnit());
+            MapScene scene = loader.load(cfg.mapPrefab(mapId), mapId);
+            int nodesBefore = scene.nodes().size();
+
+            MapScene.Node parent = null;
+            for (MapScene.Node n : scene.nodes()) {
+                if (n.trAnchor == 0) continue;
+                if (wantParent != null) { if (n.name != null && n.name.contains(wantParent)) { parent = n; break; } }
+                else if (n.parentTr == 0) { parent = n; break; }        // root
+            }
+            if (parent == null) { System.err.println("[spineadd] không tìm được node cha"); System.exit(3); }
+
+            com.apex.maptool.unity.SpineCatalog.Entry skel = null;
+            for (var e : cat.all()) {
+                if (e.materialGuid == null) continue;
+                if (wantSkel != null && !e.name.equalsIgnoreCase(wantSkel)) continue;
+                skel = e; break;
+            }
+            if (skel == null) { System.err.println("[spineadd] không tìm được skeleton"); System.exit(3); }
+            System.out.println("[spineadd] cha='" + parent.name + "' · skeleton='" + skel.name + "' (" + skel.shortPath + ")");
+
+            var added = scene.addSpineNode(parent, null, skel, "animation", 3.5, 2.0, 1.0);
+            if (added == null) { System.err.println("[spineadd] addSpineNode trả null"); System.exit(1); }
+            System.out.println("[spineadd] tạo node '" + added.name + "' anchors go=" + added.goAnchor
+                    + " tr=" + added.trAnchor + " mf=" + added.mfAnchor + " rend=" + added.rendAnchor
+                    + " fx=" + added.fxAnchor);
+
+            Path tmp = java.nio.file.Files.createTempFile("spineadd-", ".prefab");
+            var res = com.apex.maptool.unity.MapSceneWriter.saveAs(scene, null, tmp);
+            for (String l : res.log) System.out.println("    " + l);
+            System.out.println("[spineadd] ghi ra " + tmp + " · field=" + res.fieldsWritten
+                    + " · cảnh báo=" + res.warnings + " · lỗi=" + res.failed.size());
+
+            // ĐỌC LẠI — bằng chứng thật
+            MapScene re = loader.load(tmp, mapId);
+            MapScene.Node back = null;
+            for (MapScene.Node n : re.nodes()) if (n.goAnchor == added.goAnchor) { back = n; break; }
+            boolean okExist = back != null;
+            boolean okCount = re.nodes().size() == nodesBefore + 1;
+            boolean okSkel = false, okParent = false, okDraw = false, okRend = false;
+            if (back != null) {
+                var bf = back.fxOf(MapScene.EffectKind.SPINE);
+                okSkel = bf != null && skel.skeletonGuid.equalsIgnoreCase(bf.assetGuid);
+                okParent = back.parentTr == parent.trAnchor;
+                okRend = back.hasRenderer && !back.isSprite;
+                if (bf != null && bf.folder != null) {
+                    okDraw = com.apex.maptool.spine.SpineCharacter.load(bf.folder) != null;
+                }
+                System.out.println("[spineadd] đọc lại: tên='" + back.name + "'"
+                        + " · skeleton=" + (bf == null ? "(không có Fx SPINE)" : bf.name + "/" + bf.assetGuid)
+                        + " · cha=&" + back.parentTr + " (mong &" + parent.trAnchor + ")"
+                        + " · renderer=" + (back.hasRenderer ? (back.isSprite ? "Sprite" : "Mesh") : "KHÔNG"));
+            }
+            // cha phải THẬT SỰ liệt kê con mới trong m_Children
+            boolean okChildRef = false;
+            for (MapScene.Node n : re.nodes()) {
+                if (n.trAnchor != parent.trAnchor) continue;
+                for (long ch : n.childTr) if (ch == added.trAnchor) { okChildRef = true; break; }
+            }
+
+            System.out.println("[spineadd] node tồn tại=" + ok(okExist) + " · số node +1=" + ok(okCount)
+                    + " · đúng skeleton=" + ok(okSkel) + " · đúng cha=" + ok(okParent)
+                    + " · có trong m_Children của cha=" + ok(okChildRef)
+                    + " · là MeshRenderer=" + ok(okRend) + " · vẽ được=" + ok(okDraw));
+            java.nio.file.Files.deleteIfExists(tmp);
+            boolean all = okExist && okCount && okSkel && okParent && okChildRef && okRend && okDraw && res.ok();
+            System.out.println("[spineadd] ===> " + (all ? "TẤT CẢ ĐẠT" : "CÓ MỤC HỎNG"));
+            System.exit(all ? 0 : 1);
+        } catch (Exception e) {
+            System.err.println("[spineadd] FAIL: " + e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private static String ok(boolean b) { return b ? "ĐẠT" : "HỎNG"; }
+
+    /**
+     * Dựng BẢNG THUMBNAIL skeleton bằng ĐÚNG đường vẽ của khung xem trước trong hộp thoại chọn —
+     * để nhìn thấy ngay cái nào vẽ hỏng, thay vì mở tool click từng cái.
+     *
+     * <pre>skelsheet &lt;out.png&gt; [số=48] [bỏQua=0] [lọc]</pre>
+     */
+    private void skelSheet(String[] args) {
+        try {
+            String out = args[1];
+            int count = args.length > 2 ? parseInt(args[2], 48) : 48;
+            int skip = args.length > 3 ? parseInt(args[3], 0) : 0;
+            String filter = args.length > 4 ? args[4] : null;
+
+            GuidIndex gi = new GuidIndex();
+            gi.buildOrLoad(cfg.assetsRoot(), cfg.guidCacheFile());
+            var cat = new com.apex.maptool.unity.SpineCatalog(gi, cfg.assetsRoot());
+            var list = cat.search(filter);
+            System.out.println("[sheet] danh mục " + cat.size() + " · sau lọc " + list.size());
+
+            int cell = 150, cols = 8, pad = 18;
+            int n = Math.min(count, Math.max(0, list.size() - skip));
+            int rows = (n + cols - 1) / cols;
+            java.awt.image.BufferedImage sheet = new java.awt.image.BufferedImage(
+                    cols * cell, Math.max(1, rows) * (cell + pad), java.awt.image.BufferedImage.TYPE_INT_RGB);
+            java.awt.Graphics2D sg = sheet.createGraphics();
+            sg.setColor(new java.awt.Color(0x14141A));
+            sg.fillRect(0, 0, sheet.getWidth(), sheet.getHeight());
+            sg.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 11));
+
+            int empty = 0, failed = 0;
+            for (int i = 0; i < n; i++) {
+                var e = list.get(skip + i);
+                int cx = (i % cols) * cell, cy = (i / cols) * (cell + pad);
+                java.awt.image.BufferedImage th =
+                        new java.awt.image.BufferedImage(cell, cell, java.awt.image.BufferedImage.TYPE_INT_RGB);
+                java.awt.Graphics2D g = th.createGraphics();
+                g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setColor(new java.awt.Color(0x2A2A33));
+                g.fillRect(0, 0, cell, cell);
+                boolean realBox = false, loaded = false;
+                try {
+                    var sc = com.apex.maptool.spine.SpineCharacter.load(e.folder);
+                    if (sc != null) {
+                        loaded = true;
+                        var anim = sc.data.animations.values().stream().findFirst().orElse(null);
+                        realBox = sc.renderFit(g, cell, cell, 10, anim);
+                    }
+                } catch (Exception ignored) { }
+                g.dispose();
+                if (!loaded) failed++;
+                else if (!realBox) empty++;
+                sg.drawImage(th, cx, cy, null);
+                sg.setColor(loaded ? (realBox ? new java.awt.Color(0xB8C0CC) : new java.awt.Color(0xF0B429))
+                                   : new java.awt.Color(0xFF6B6B));
+                String nm = e.name.length() > 22 ? e.name.substring(0, 21) + "…" : e.name;
+                sg.drawString(nm, cx + 4, cy + cell + 13);
+            }
+            sg.dispose();
+            javax.imageio.ImageIO.write(sheet, "png", new java.io.File(out));
+            System.out.println("[sheet] " + n + " skeleton → " + out
+                    + " · không nạp được=" + failed + " · hộp bao rỗng (dùng hộp khai báo)=" + empty);
+            System.exit(0);
+        } catch (Exception e) {
+            System.err.println("[sheet] FAIL: " + e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * ĐO thời gian vẽ 1 khung hình của Bố cục Map, có/không hoà màu blend, để biết lag nằm ở đâu
+     * thay vì đoán.
+     *
+     * <pre>layoutbench &lt;mapId&gt; [sốKhung=30]</pre>
+     */
+    private void layoutBench(String[] args) {
+        try {
+            int mapId = parseInt(args[1], 8);
+            int frames = args.length > 2 ? parseInt(args[2], 30) : 30;
+            GuidIndex gi = new GuidIndex();
+            gi.buildOrLoad(cfg.assetsRoot(), cfg.guidCacheFile());
+            var texCache = new TextureCache();
+            var loader = new MapSceneLoader(gi, new MaterialResolver(gi), texCache, cfg.pixelsPerUnit());
+            MapScene scene = loader.load(cfg.mapPrefab(mapId), mapId);
+
+            int nSpine = 0, nBlendSlot = 0;
+            for (MapScene.Node n : scene.nodes()) {
+                if (!n.hasFx(MapScene.EffectKind.SPINE)) continue;
+                nSpine++;
+                var f = n.fxOf(MapScene.EffectKind.SPINE);
+                if (f == null || f.folder == null) continue;
+                var sc = com.apex.maptool.spine.SpineCharacter.load(f.folder);
+                if (sc == null) continue;
+                for (var s : sc.data.slots) if (s.blend != com.apex.maptool.spine.SpineData.BLEND_NORMAL) nBlendSlot++;
+            }
+            System.out.println("[bench] map " + mapId + ": " + scene.nodes().size() + " node · "
+                    + nSpine + " node Spine · " + nBlendSlot + " slot có blend đặc biệt");
+
+            final int w = 1200, h = 800;
+            final double[][] res = new double[2][];
+            Runnable job = () -> {
+                var c = new com.apex.maptool.ui.MapLayoutCanvas(texCache, cfg.pixelsPerUnit());
+                c.setSize(w, h);
+                c.setScene(scene);
+                c.setShowSprites(true);
+                c.doLayout();
+                c.fitView();
+                c.setPlayEffects(true);
+                for (int mode = 0; mode < 2; mode++) {
+                    com.apex.maptool.spine.SpineRenderer.BLEND_ENABLED = (mode == 0);
+                    java.awt.image.BufferedImage img =
+                            new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB);
+                    // 5 khung làm nóng (JIT + cache ảnh) rồi mới đo
+                    for (int i = 0; i < 5; i++) { c.setEffectTime(i * 0.11); paintOnce(c, img); }
+                    double[] ms = new double[frames];
+                    for (int i = 0; i < frames; i++) {
+                        c.setEffectTime(i * 0.037);
+                        long t0 = System.nanoTime();
+                        paintOnce(c, img);
+                        ms[i] = (System.nanoTime() - t0) / 1e6;
+                    }
+                    res[mode] = ms;
+                }
+                com.apex.maptool.spine.SpineRenderer.BLEND_ENABLED = true;
+            };
+            if (java.awt.GraphicsEnvironment.isHeadless()) job.run();
+            else SwingUtilities.invokeAndWait(job);
+
+            for (int mode = 0; mode < 2; mode++) {
+                double[] ms = res[mode].clone();
+                java.util.Arrays.sort(ms);
+                double sum = 0; for (double v : ms) sum += v;
+                System.out.printf(java.util.Locale.ROOT,
+                        "[bench] blend=%-3s  trung bình %6.1f ms  ·  giữa %6.1f ms  ·  xấu nhất %6.1f ms  ⇒ %4.1f fps%n",
+                        mode == 0 ? "BẬT" : "TẮT", sum / ms.length, ms[ms.length / 2], ms[ms.length - 1],
+                        1000.0 / (sum / ms.length));
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            System.err.println("[bench] FAIL: " + e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private static void paintOnce(com.apex.maptool.ui.MapLayoutCanvas c, java.awt.image.BufferedImage img) {
+        java.awt.Graphics2D g = img.createGraphics();
+        try { c.paint(g); } finally { g.dispose(); }
+    }
+
     /** Headless verify: build index + parse map, in stats. Không mở GUI. */
     private void headlessTest(int mapId) {
         try {
@@ -311,11 +1021,14 @@ public class MapToolApp {
     }
 
     /** Map editor dạng CARD nhúng thẳng vào vỏ app (CardLayout — không dùng MDI). */
-    public JComponent startEmbedded() {
+    public JComponent startEmbedded() { return startEmbedded(1); }
+
+    /** Như trên nhưng mở sẵn map chỉ định (uisnap dùng để chụp đúng map cần soi). */
+    public JComponent startEmbedded(int mapId) {
         if (!initCore()) return null;
         JPanel root = buildRoot();
-        selectMapCombo(1);
-        loadMap(1);
+        selectMapCombo(mapId);
+        loadMap(mapId);
         return root;
     }
 
@@ -423,6 +1136,8 @@ public class MapToolApp {
         panel.add(com.apex.maptool.ui.Theme.section("Shop", buildShopPanel(), false));
         panel.add(Box.createVerticalStrut(10));
         panel.add(com.apex.maptool.ui.Theme.section("Thao tác", buildActionsPanel(), false));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(com.apex.maptool.ui.Theme.section("Xuất file cho team", buildExportPanel(), false));
         panel.add(Box.createVerticalStrut(10));
         panel.add(com.apex.maptool.ui.Theme.section("Chú thích", buildLegendPanel(), false));
         panel.add(Box.createVerticalGlue());
@@ -609,6 +1324,20 @@ public class MapToolApp {
         return p;
     }
 
+    /**
+     * Xuất FILE — dùng khi KHÔNG ghi thẳng được: máy không nối tới DB đích, hoặc thứ cần sửa nằm
+     * ở client chứ không ở DB. Ghi thẳng DB thì đã có nút "★ Lưu DB" ở mục Thao tác.
+     */
+    private JComponent buildExportPanel() {
+        JPanel p = new JPanel(new GridLayout(0, 1, 0, 5));
+        p.setOpaque(false);
+        p.add(com.apex.maptool.ui.Theme.btn("⬆  SQL map đang mở", null, e -> exportSqlCurrent()));
+        p.add(com.apex.maptool.ui.Theme.btn("⬆  SQL mọi bản nháp", null, e -> exportSqlAllDrafts()));
+        p.add(com.apex.maptool.ui.Theme.btn("🧩  NPCData.json (client)",
+                com.apex.maptool.ui.Theme.BTN_PURPLE, e -> exportNpcData()));
+        return p;
+    }
+
     private JComponent buildLegendPanel() {
         JPanel p = new JPanel(new GridLayout(0, 1, 0, 0));
         p.setOpaque(false);
@@ -685,6 +1414,204 @@ public class MapToolApp {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lưu fail:\n" + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // ─── Xuất file ─────────────────────────────────────────────
+    /** Nhớ thư mục lần xuất trước — xuất SQL rồi xuất NPCData thường vào cùng một chỗ. */
+    private static java.io.File lastExportDir;
+
+    /**
+     * Hộp thoại lưu + ghi UTF-8. Trả true nếu đã ghi.
+     * Tự thêm đuôi nếu người dùng gõ tên trống đuôi, và hỏi lại khi đè file có sẵn.
+     */
+    private boolean saveTextFile(String suggestedName, String content, String title) {
+        JFileChooser fc = new JFileChooser(lastExportDir);
+        fc.setDialogTitle(title);
+        fc.setSelectedFile(new java.io.File(lastExportDir, suggestedName));
+        if (fc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) return false;
+        java.io.File f = fc.getSelectedFile();
+        int dot = suggestedName.lastIndexOf('.');
+        String ext = dot > 0 ? suggestedName.substring(dot) : "";
+        if (!ext.isEmpty() && !f.getName().toLowerCase().endsWith(ext)) f = new java.io.File(f.getPath() + ext);
+        if (f.exists()) {
+            int ch = JOptionPane.showConfirmDialog(null, "Đè file đã có?\n" + f.getPath(),
+                    "File đã tồn tại", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (ch != JOptionPane.YES_OPTION) return false;
+        }
+        try {
+            java.nio.file.Files.writeString(f.toPath(), content, java.nio.charset.StandardCharsets.UTF_8);
+            lastExportDir = f.getParentFile();
+            return true;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Ghi file fail:\n" + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private void exportSqlCurrent() {
+        var ms = canvas.getEditMarkers();
+        String sql = com.apex.maptool.db.MapExport.sqlHeader()
+                + com.apex.maptool.db.MapExport.sqlForMap(currentMapId, mapNames.get(currentMapId), ms);
+        if (saveTextFile("uocrong_map_" + currentMapId + ".sql", sql, "Xuất SQL — map " + currentMapId)) {
+            JOptionPane.showMessageDialog(null,
+                    "Đã xuất SQL cho map " + currentMapId + " (" + ms.size() + " marker).\n\n"
+                    + "Dev server chạy file này rồi RESTART server game mới ăn.",
+                    "Xuất SQL", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * SQL cho MỌI map đang sửa dở: các bản nháp trong {@code work/} + map đang mở.
+     * Map đang mở lấy bản TRONG RAM (đè bản nháp trên đĩa) vì đó mới là thứ đang nhìn thấy.
+     */
+    private void exportSqlAllDrafts() {
+        java.util.TreeMap<Integer, java.util.List<com.apex.maptool.model.Marker>> byMap = new java.util.TreeMap<>();
+        for (int id : localStore.draftMapIds()) {
+            try {
+                var ms = localStore.load(id);
+                if (ms != null) byMap.put(id, ms);
+            } catch (Exception ex) {
+                System.err.println("[App] đọc nháp map " + id + " fail: " + ex.getMessage());
+            }
+        }
+        byMap.put(currentMapId, canvas.getEditMarkers());
+
+        StringBuilder sb = new StringBuilder(com.apex.maptool.db.MapExport.sqlHeader());
+        for (var e : byMap.entrySet()) {
+            sb.append(com.apex.maptool.db.MapExport.sqlForMap(e.getKey(), mapNames.get(e.getKey()), e.getValue()));
+            sb.append('\n');
+        }
+        if (saveTextFile("uocrong_map_update.sql", sb.toString(), "Xuất SQL — " + byMap.size() + " map")) {
+            JOptionPane.showMessageDialog(null,
+                    "Đã xuất SQL cho " + byMap.size() + " map: " + byMap.keySet() + "\n\n"
+                    + "(gồm mọi bản nháp trong work/ và map đang mở)\n"
+                    + "Dev server chạy xong phải RESTART server game.",
+                    "Xuất SQL", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * NPCData.json cho client Unity ({@code Assets/Resources/NPCData.json}).
+     *
+     * <p>Phải gom NPC của TẤT CẢ map chứ không riêng map đang mở — file này client đọc trọn gói,
+     * xuất thiếu map là NPC map đó biến mất. Nền lấy từ DB, rồi đè bằng bản nháp local và bản
+     * đang sửa trong RAM.
+     */
+    private void exportNpcData() {
+        if (mapDao == null) { JOptionPane.showMessageDialog(null, "Chưa kết nối DB", "Lỗi", JOptionPane.ERROR_MESSAGE); return; }
+        setCursorBusy(true);
+        new SwingWorker<java.util.Map<Integer, java.util.List<com.apex.maptool.model.Marker>>, Void>() {
+            @Override protected java.util.Map<Integer, java.util.List<com.apex.maptool.model.Marker>> doInBackground() throws Exception {
+                var all = new java.util.TreeMap<>(mapDao.loadAllNpcs());       // nền: DB
+                for (int id : localStore.draftMapIds()) {                     // đè: bản nháp
+                    try {
+                        var ms = localStore.load(id);
+                        if (ms != null) all.put(id, ms);
+                    } catch (Exception ignored) { }
+                }
+                all.put(currentMapId, canvas.getEditMarkers());               // đè: bản đang mở
+                return all;
+            }
+            @Override protected void done() {
+                setCursorBusy(false);
+                try {
+                    finishNpcData(get());
+                } catch (Exception ex) {
+                    Throwable c = ex.getCause() != null ? ex.getCause() : ex;
+                    JOptionPane.showMessageDialog(null, "Xuất NPCData fail:\n" + c, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }.execute();
+    }
+
+    /** File NPCData.json của client theo config (có thể chưa tồn tại). */
+    private Path clientNpcDataFile() {
+        String repo = cfg.clientRepo();
+        if (repo == null || repo.isBlank()) return null;
+        return Paths.get(repo, "Assets", "Resources", "NPCData.json");
+    }
+
+    /**
+     * Đối chiếu với file client đang có RỒI mới cho ghi.
+     *
+     * <p>Bắt buộc phải có bước này: đo trên client thật, 12 map (1500, 8000-8004, 10000-10005, 36000)
+     * có NPC ở file client mà `map_info_config` không quản. Xuất "đúng theo DB" rồi ghi đè là mất
+     * 20 NPC không kèn không trống. Nên mặc định là **giữ lại** mấy map đó, và muốn xuất đúng-y-DB
+     * thì phải chọn có ý thức.
+     */
+    private void finishNpcData(java.util.Map<Integer, java.util.List<com.apex.maptool.model.Marker>> all) throws Exception {
+        Path clientFile = clientNpcDataFile();
+        String oldJson = (clientFile != null && Files.exists(clientFile)) ? Files.readString(clientFile) : null;
+
+        String json;
+        String note;
+        if (oldJson != null) {
+            var d = com.apex.maptool.db.MapExport.diffNpcData(oldJson, all);
+            StringBuilder msg = new StringBuilder("<html><b>So với NPCData.json đang có trong client:</b><br><br>");
+            msg.append("• Giống hệt: <b>").append(d.same()).append("</b> map<br>");
+            msg.append("• Khác nội dung: <b>").append(d.changed().size()).append("</b> map<br>");
+            msg.append("• Map mới có thêm: <b>").append(d.onlyNew().size()).append("</b>")
+               .append(d.onlyNew().isEmpty() ? "" : " (" + d.onlyNew() + ")").append("<br>");
+            if (d.anyLoss()) {
+                msg.append("<br><font color='#ff6b6b'><b>⚠ ").append(d.onlyOld().size())
+                   .append(" map có NPC ở file client mà DB không có</b></font><br>")
+                   .append(d.onlyOld()).append("<br>")
+                   .append("Ghi đúng-y-DB sẽ <b>xoá ").append(d.lostNpc()).append(" NPC</b> của mấy map đó.<br>");
+            }
+            msg.append("</html>");
+
+            String[] opts = d.anyLoss()
+                    ? new String[]{"Giữ NPC của map DB không quản (khuyên dùng)", "Xuất đúng y DB", "Huỷ"}
+                    : new String[]{"Xuất", "Huỷ"};
+            int ch = JOptionPane.showOptionDialog(null, new JLabel(msg.toString()), "NPCData.json",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+            if (ch < 0 || ch == opts.length - 1) return;               // Huỷ / đóng cửa sổ
+            boolean merge = d.anyLoss() && ch == 0;
+            json = merge ? com.apex.maptool.db.MapExport.npcDataJsonMerged(all, oldJson)
+                         : com.apex.maptool.db.MapExport.npcDataJson(all);
+            note = merge ? "Đã GIỮ NPC của " + d.onlyOld().size() + " map DB không quản." : "Xuất đúng y DB.";
+        } else {
+            json = com.apex.maptool.db.MapExport.npcDataJson(all);
+            note = "Không tìm thấy NPCData.json trong client để đối chiếu"
+                    + (clientFile == null ? " (chưa khai client.repo)" : ":\n" + clientFile);
+        }
+
+        int nMap = com.apex.maptool.db.MapExport.countMapsWithNpc(all);
+        // Ghi thẳng vào client (có backup) hay lưu ra chỗ khác?
+        if (clientFile != null) {
+            String[] where = {"Ghi thẳng vào client (backup .bak)", "Lưu ra file khác…", "Huỷ"};
+            int w = JOptionPane.showOptionDialog(null,
+                    "<html>" + note.replace("\n", "<br>") + "<br><br>Ghi vào đâu?<br><code>"
+                    + clientFile + "</code></html>",
+                    "NPCData.json", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, where, where[0]);
+            if (w == 2 || w < 0) return;
+            if (w == 0) {
+                if (Files.exists(clientFile)) {
+                    Path bak = clientFile.resolveSibling("NPCData.json.bak_"
+                            + new java.text.SimpleDateFormat("yyyyMMdd-HHmmss").format(new java.util.Date()));
+                    Files.copy(clientFile, bak);
+                    System.out.println("[App] backup NPCData → " + bak);
+                }
+                Files.createDirectories(clientFile.getParent());
+                Files.writeString(clientFile, json, java.nio.charset.StandardCharsets.UTF_8);
+                JOptionPane.showMessageDialog(null,
+                        "Đã ghi thẳng vào client (" + nMap + " map có NPC).\n" + clientFile
+                        + "\n\nMở Unity cho re-import.",
+                        "Xuất NPCData.json", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
+        if (saveTextFile("NPCData.json", json, "Xuất NPCData.json cho client")) {
+            JOptionPane.showMessageDialog(null,
+                    note + "\n\nĐã xuất " + nMap + " map có NPC.\n"
+                    + "Chép đè vào <client>/Assets/Resources/NPCData.json rồi cho Unity re-import.",
+                    "Xuất NPCData.json", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void setCursorBusy(boolean busy) {
+        java.awt.Window w = SwingUtilities.getWindowAncestor(canvas);
+        if (w != null) w.setCursor(Cursor.getPredefinedCursor(busy ? Cursor.WAIT_CURSOR : Cursor.DEFAULT_CURSOR));
     }
 
     /** Lưu các điểm rơi vào đã kéo (dirty) về DB của từng map nguồn (sửa bX/bY cổng tương ứng). */
@@ -958,5 +1885,11 @@ public class MapToolApp {
 
     private static int parseInt(String s, int def) {
         try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
+    }
+
+    /** Giá trị của token CÓ TÊN dạng {@code khoá=giá trị} trong argv (không có ⇒ {@code def}). */
+    private static String argVal(String[] args, String key, String def) {
+        for (String a : args) if (a.startsWith(key)) return a.substring(key.length());
+        return def;
     }
 }

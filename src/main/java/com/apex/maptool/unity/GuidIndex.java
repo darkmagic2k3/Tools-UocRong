@@ -68,6 +68,21 @@ public final class GuidIndex {
 
     public int size() { return guidToPath.size(); }
 
+    /**
+     * Mọi cặp (guid, path) có TÊN FILE kết thúc bằng {@code suffix} — liệt kê asset theo loại mà
+     * không phải quét lại đĩa. Index đã có sẵn đường dẫn của mọi asset nên
+     * {@code endingWith("_SkeletonData.asset")} chính là danh sách skeleton của cả client.
+     */
+    public List<Map.Entry<String, Path>> endingWith(String suffix) {
+        List<Map.Entry<String, Path>> out = new java.util.ArrayList<>();
+        for (Map.Entry<String, Path> e : guidToPath.entrySet()) {
+            Path p = e.getValue();
+            if (p != null && p.getFileName() != null
+                    && p.getFileName().toString().endsWith(suffix)) out.add(e);
+        }
+        return out;
+    }
+
     // ─── Disk cache (build 1 lần, reload nhanh) ────────────────
 
     /** Load cache nếu có → true; build từ scanRoot + save → false nếu phải build. */

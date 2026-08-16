@@ -53,6 +53,11 @@ public final class ShopDao {
         public int limit;
         public String priceJson;  // [{"key":1,"value":1000}]
         public String name;       // tên item lưu kèm cho dễ đọc (server bỏ qua)
+        // Chỉ số RIÊNG của entry shop (ShopItemJson.infoBuff/randomBuff). Server ƯU TIÊN cái này,
+        // có giá trị thì template equip_info bị bỏ qua. null = không có (dùng template);
+        // randomBuff "" = tắt buff random → phải phân biệt null với "" khi ghi lại.
+        public String infoBuff;
+        public String randomBuff;
     }
 
     public record ItemInfo(int id, String name) {
@@ -219,6 +224,8 @@ public final class ShopDao {
             it.limitType = optInt(o, "limitType", 0);
             it.limit = optInt(o, "limit", 0);
             it.name = optStr(o, "name");
+            it.infoBuff = optStr(o, "infoBuff");
+            it.randomBuff = optStr(o, "randomBuff");
             JsonElement prices = o.get("prices");
             it.priceJson = prices != null && !prices.isJsonNull() ? GSON.toJson(prices) : "[]";
             out.add(it);
@@ -237,6 +244,10 @@ public final class ShopDao {
         o.addProperty("limit", it.limit);
         o.addProperty("name", name != null ? name : (it.name != null ? it.name : ""));
         o.add("prices", GSON.fromJson(it.priceJson, JsonArray.class));
+        // GIỮ NGUYÊN chỉ số riêng của entry — bỏ 2 dòng này = mỗi lần Sửa/Paste là xóa sạch
+        // chỉ số riêng, item bán ra tụt về template equip_info.
+        if (it.infoBuff != null) o.addProperty("infoBuff", it.infoBuff);
+        if (it.randomBuff != null) o.addProperty("randomBuff", it.randomBuff);
         return o;
     }
 

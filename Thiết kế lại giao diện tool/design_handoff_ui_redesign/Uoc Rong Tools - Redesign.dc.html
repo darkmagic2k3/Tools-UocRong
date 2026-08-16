@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #08080a; }
+  a { color: #f0b429; text-decoration: none; }
+  a:hover { color: #ffc94d; }
+</style>
+</helmet>
+
+<section style="white-space:nowrap;flex:none;display:flex;flex-direction:column;gap:40px;padding:48px;font-family:'Be Vietnam Pro',system-ui,sans-serif">
+
+  <div id="1a" style="white-space:nowrap;flex:none;display:flex;flex-direction:column;gap:28px">
+
+    <div style="white-space:normal;display:flex;align-items:center;gap:14px">
+      <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 11px;border-radius:999px;background:#221e11;border:1px solid #f0b429;color:#f0b429;font-size:13px;font-weight:700;letter-spacing:.04em">1a</span>
+      <span style="color:#f0f0f4;font-size:19px;font-weight:700">Ước Rồng Tools — bố cục lại (1920×1080, giữ nguyên token Theme.java)</span>
+      <span style="color:#5c5c68;font-size:13px">5 bước có số ở rail phải · 1 hàng công cụ · nút nguy hiểm tách riêng</span>
+    </div>
+
+    <!-- ══════════════════ FRAME 1 · PLAYER VIEWER ══════════════════ -->
+    <sc-if value="{{ showPlayer }}" hint-placeholder-val="{{ true }}">
+    <div style="white-space:nowrap;flex:none;display:flex;flex-direction:column;gap:14px">
+      <div style="white-space:nowrap;flex:none;display:flex;align-items:baseline;gap:10px">
+        <span style="color:#8b8b98;font-size:12px;font-weight:700;letter-spacing:.18em">MÀN 1</span>
+        <span style="color:#f0f0f4;font-size:16px;font-weight:700">Player Viewer · tab Hào Quang</span>
+      </div>
+
+      <div style="white-space:nowrap;flex:none;position:relative;width:1920px;height:1080px;background:#060608;border:1px solid #26262e;border-radius:14px;overflow:hidden;display:flex;color:#f0f0f4;font-size:14px">
+
+        <!-- sidebar -->
+        <div style="white-space:nowrap;flex:none;width:240px;flex:none;background:#0a0a0d;border-right:1px solid #1c1c22;padding:20px 14px 16px;display:flex;flex-direction:column">
+          <div style="color:#f0b429;font-size:11px;font-weight:700;letter-spacing:.22em">APEX GAMES</div>
+          <div style="white-space:nowrap;flex:none;margin-top:6px;display:flex;align-items:baseline;gap:7px">
+            <span style="color:#f0f0f4;font-size:19px;font-weight:800;letter-spacing:.01em">ƯỚC RỒNG</span>
+            <span style="color:#f0b429;font-size:19px;font-weight:800">TOOLS</span>
+          </div>
+          <div style="margin-top:9px;width:44px;height:3px;background:#f0b429;border-radius:2px"></div>
+
+          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:12px;font-weight:600">Toàn màn hình</div>
+            <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:12px;font-weight:600">Khởi động lại</div>
+          </div>
+
+          <div style="margin-top:22px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">DATABASE</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">MySQL Config</div>
+          </div>
+          <div style="margin-top:16px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">EDITORS</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Map Editor</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Shop</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Bố cục Map</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Chỉ số trang bị</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Giftcode</div>
+          </div>
+          <div style="margin-top:16px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">SPINE</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;position:relative;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;background:#221e11;color:#ffc94d;font-size:14px;font-weight:600">
+              <span style="position:absolute;left:0;top:6px;bottom:6px;width:3px;background:#f0b429;border-radius:2px"></span>Player Viewer</div>
+          </div>
+
+          <div style="flex:1"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.35);border-radius:8px;color:#f87171;font-size:12px;font-weight:600">Đóng tool</div>
+            <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.35);border-radius:8px;color:#f87171;font-size:12px;font-weight:600">Thoát app</div>
+          </div>
+          <div style="white-space:nowrap;flex:none;margin-top:12px;padding-top:12px;border-top:1px solid #1c1c22;display:flex;align-items:center;gap:7px">
+            <span style="width:7px;height:7px;border-radius:999px;background:#34d399"></span>
+            <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">v0.1.0 · 45.119.215.17:3306</span>
+          </div>
+        </div>
+
+        <!-- main -->
+        <div style="white-space:nowrap;flex:none;flex:1;display:flex;flex-direction:column;background:#0d0d10;min-width:0">
+          <div style="white-space:nowrap;flex:none;height:56px;flex:none;background:#0a0a0d;border-bottom:1px solid #1c1c22;display:flex;align-items:center;padding:0 20px 0 24px;gap:14px">
+            <span style="color:#f0f0f4;font-size:16px;font-weight:700">Player Viewer</span>
+            <span style="color:#2a2a33">/</span>
+            <span style="color:#8b8b98;font-size:13px">Hào Quang</span>
+            <div style="flex:1"></div>
+            <div style="white-space:nowrap;flex:none;display:flex;gap:8px">
+              <div style="white-space:nowrap;flex:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px">⤢</div>
+              <div style="white-space:nowrap;flex:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px">–</div>
+            </div>
+          </div>
+
+          <div style="white-space:nowrap;flex:none;flex:1;display:flex;flex-direction:column;gap:12px;padding:16px 20px 18px;min-height:0">
+
+            <!-- source card -->
+            <div style="white-space:nowrap;flex:none;flex:none;background:#121216;border:1px solid #26262e;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+              <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:10px">
+                <span style="color:#8b8b98;font-size:13px;font-weight:600;flex:none">Thư mục Spine</span>
+                <div style="flex:1;height:36px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;padding:0 12px;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace;overflow:hidden;white-space:nowrap">E:\UocRongOnline\UocRongOnline-Client\Assets\AssetBundles\Resource\Player\1</div>
+                <div style="white-space:nowrap;flex:none;height:36px;padding:0 16px;display:flex;align-items:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Chọn…</div>
+                <div style="white-space:nowrap;flex:none;height:36px;padding:0 22px;display:flex;align-items:center;background:#f0b429;border-radius:8px;color:#151004;font-size:13px;font-weight:700">Nạp</div>
+              </div>
+              <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);color:#34d399;font-size:12px;font-weight:600">✓ Nạp OK · Player/1</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">27 slot</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">115 bone</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">45 animation</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">1 skin</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#8b8b98;font-size:12px;font-family:ui-monospace,Consolas,monospace">SkeletonData scale 0.00687500</span>
+              </div>
+            </div>
+
+            <!-- 3 columns -->
+            <div style="white-space:nowrap;flex:none;flex:1;display:flex;gap:12px;min-height:0">
+
+              <!-- browse list -->
+              <div style="white-space:nowrap;flex:none;width:272px;flex:none;background:#121216;border:1px solid #26262e;border-radius:10px;display:flex;flex-direction:column;overflow:hidden">
+                <div style="white-space:nowrap;flex:none;padding:12px 12px 10px;display:flex;flex-direction:column;gap:9px;border-bottom:1px solid #1c1c22">
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;justify-content:space-between">
+                    <span style="color:#8b8b98;font-size:11px;font-weight:700;letter-spacing:.16em">DUYỆT NHANH</span>
+                    <span style="color:#5c5c68;font-size:12px">48 mục</span>
+                  </div>
+                  <div style="white-space:nowrap;flex:none;height:34px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;color:#f0f0f4;font-size:13px;font-weight:600">Player<span style="color:#5c5c68;font-size:11px">▾</span></div>
+                  <div style="white-space:nowrap;flex:none;height:34px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 10px;color:#5c5c68;font-size:13px"><span style="font-size:12px">⌕</span>Tìm theo tên hoặc id…</div>
+                </div>
+                <div style="flex:1;overflow:hidden;padding:8px 8px 0">
+                  <div style="padding:8px 8px 6px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.14em">0 – 99</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:0 6px 10px">
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#2f2718;border:1px solid #f0b429;color:#ffc94d;font-size:13px;font-weight:700;font-family:ui-monospace,Consolas,monospace">1</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">0</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">2</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">3</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">4</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">11</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">12</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">13</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">14</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">21</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">22</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">23</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">24</span>
+                  </div>
+                  <div style="padding:6px 8px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.14em;border-top:1px solid #1c1c22">100 – 599</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:4px 6px 10px">
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">103</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">110</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">201</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">202</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">203</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">301</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">302</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">303</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">401</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">402</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">403</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">501</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">502</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">503</span>
+                  </div>
+                  <div style="padding:6px 8px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.14em;border-top:1px solid #1c1c22">6000+</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:4px 6px 10px">
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6001</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6002</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6003</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6004</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6005</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6006</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6007</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6008</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6009</span>
+                    <span style="white-space:nowrap;flex:none;min-width:44px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;border-radius:7px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:13px;font-family:ui-monospace,Consolas,monospace">6010</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- canvas -->
+              <div style="white-space:nowrap;flex:none;flex:1;min-width:0;background:#0a0a0d;border:1px solid #26262e;border-radius:10px;display:flex;flex-direction:column;overflow:hidden">
+                <div style="white-space:nowrap;flex:none;height:50px;flex:none;background:#121216;border-bottom:1px solid #1c1c22;display:flex;align-items:center;gap:10px;padding:0 14px">
+                  <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;color:#c6c6d0;font-size:13px">
+                    <span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Cỡ thật như game</span>
+                  <span style="width:1px;height:20px;background:#2a2a33"></span>
+                  <span style="white-space:nowrap;flex:none;height:30px;padding:0 14px;display:inline-flex;align-items:center;background:#17171c;border:1px solid #2a2a33;border-radius:7px;color:#c6c6d0;font-size:13px;font-weight:600">Về giữa</span>
+                  <span style="white-space:nowrap;flex:none;height:30px;padding:0 10px;display:inline-flex;align-items:center;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">62%</span>
+                  <span style="width:1px;height:20px;background:#2a2a33"></span>
+                  <span style="white-space:nowrap;flex:none;height:30px;padding:0 14px;display:inline-flex;align-items:center;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4);border-radius:7px;color:#34d399;font-size:13px;font-weight:700">▶ Chạy</span>
+                  <span style="white-space:nowrap;flex:none;height:30px;padding:0 9px 0 11px;display:inline-flex;align-items:center;gap:8px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">15 FPS<span style="color:#5c5c68;font-size:9px;line-height:1">▴▾</span></span>
+                  <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Lặp</span>
+                  <div style="flex:1"></div>
+                  <span style="white-space:nowrap;flex:none;height:30px;padding:0 12px;display:inline-flex;align-items:center;border-radius:7px;background:#2f2718;border:1px solid rgba(240,180,41,.4);color:#ffc94d;font-size:12px;font-weight:600">Nằm SAU player</span>
+                </div>
+                <div style="flex:1;position:relative;background:#0b0b0e;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px">
+                  <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(96,165,250,.45)"></div>
+                  <div style="position:absolute;left:0;right:0;bottom:120px;height:1px;background:rgba(52,211,153,.35)"></div>
+                  <div style="white-space:nowrap;flex:none;position:absolute;left:50%;bottom:120px;transform:translate(-50%,0);width:340px;height:430px;border:1px dashed #2a2a33;border-radius:8px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+                    <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">khung render Spine</span>
+                    <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">player + hào quang (2 lớp)</span>
+                  </div>
+                  <div style="white-space:nowrap;flex:none;position:absolute;left:16px;right:16px;bottom:14px;display:flex;align-items:center;gap:8px">
+                    <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:999px;background:rgba(10,10,13,.9);border:1px solid rgba(167,139,250,.45);color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace"><span style="width:7px;height:7px;border-radius:2px;background:#a78bfa"></span>hiện lớp SAU · hqsau1</span>
+                    <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:999px;background:rgba(10,10,13,.9);border:1px solid #2a2a33;color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace"><span style="width:7px;height:7px;border-radius:2px;background:#2a2a33"></span>lớp TRƯỚC · tắt</span>
+                    <div style="flex:1"></div>
+                    <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:30px;padding:0 11px;border-radius:999px;background:rgba(10,10,13,.9);border:1px solid #2a2a33;color:#8b8b98;font-size:12px">lăn chuột = phóng · kéo = dời lớp đang chọn</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- inspector -->
+              <div style="white-space:nowrap;flex:none;width:452px;flex:none;background:#121216;border:1px solid #26262e;border-radius:10px;display:flex;flex-direction:column;overflow:hidden">
+                <div style="white-space:nowrap;flex:none;height:46px;flex:none;display:flex;align-items:stretch;padding:0 6px;border-bottom:1px solid #1c1c22">
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;padding:0 14px;color:#8b8b98;font-size:14px;font-weight:600">Animation</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;padding:0 14px;color:#8b8b98;font-size:14px;font-weight:600">Slot</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;padding:0 14px;color:#8b8b98;font-size:14px;font-weight:600">Bone</div>
+                  <div style="white-space:nowrap;flex:none;position:relative;display:flex;align-items:center;padding:0 14px;color:#ffc94d;font-size:14px;font-weight:700">Hào Quang<span style="position:absolute;left:10px;right:10px;bottom:0;height:3px;background:#f0b429;border-radius:2px 2px 0 0"></span></div>
+                </div>
+
+                <div style="white-space:nowrap;flex:none;flex:none;padding:9px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c1c22">
+                  <div style="white-space:nowrap;flex:none;flex:1;display:flex;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;padding:3px">
+                    <div style="white-space:nowrap;flex:none;flex:1;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:#f0b429;color:#151004;font-size:13px;font-weight:700">Hào quang SM</div>
+                    <div style="white-space:nowrap;flex:none;flex:1;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#8b8b98;font-size:13px;font-weight:600">Đặc biệt</div>
+                  </div>
+                  <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:7px;background:#2f2718;border:1px solid rgba(240,180,41,.4);color:#ffc94d;font-size:12px;font-weight:600">đang sửa: SM #1</span>
+                </div>
+
+                <div style="white-space:nowrap;flex:none;flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:6px">
+
+                  <!-- step 1 -->
+                  <sc-if value="{{ stepsCollapsed }}" hint-placeholder-val="{{ true }}">
+                  <div style="white-space:nowrap;flex:none;flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+                    <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.45);color:#34d399;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>
+                    <span style="color:#c6c6d0;font-size:14px;font-weight:600">1 · Nguồn ảnh</span>
+                    <div style="flex:1"></div>
+                    <span style="color:#8b8b98;font-size:12px;font-family:ui-monospace,Consolas,monospace">Import SM · 5 frame</span>
+                    <span style="color:#5c5c68;font-size:11px">▾</span>
+                  </div>
+                  </sc-if>
+                  <sc-if value="{{ stepsExpanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;overflow:hidden">
+                    <div style="white-space:nowrap;flex:none;padding:9px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c1c22">
+                      <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">1</span>
+                      <span style="color:#f0f0f4;font-size:14px;font-weight:700">Nguồn ảnh</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:11px">▴</span>
+                    </div>
+                    <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                      <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Import SM…</div>
+                      <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Tạo mới (PNG)</div>
+                      <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Sửa import</div>
+                    </div>
+                  </div>
+                  </sc-if>
+
+                  <!-- step 2 -->
+                  <div style="flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;overflow:hidden">
+                    <div style="white-space:nowrap;flex:none;padding:9px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c1c22">
+                      <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">2</span>
+                      <span style="color:#f0f0f4;font-size:14px;font-weight:700">Hai lớp ảnh</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:12px">slot 0 = sau · slot 1 = trước</span>
+                    </div>
+                    <div style="white-space:nowrap;flex:none;padding:10px 12px;display:flex;flex-direction:column;gap:9px">
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                        <span style="width:7px;height:7px;flex:none;border-radius:2px;background:#a78bfa"></span>
+                        <span style="width:96px;flex:none;color:#c6c6d0;font-size:13px;font-weight:600">Lớp SAU</span>
+                        <div style="white-space:nowrap;flex:none;flex:1;height:32px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">hqsau1<span style="color:#5c5c68;font-size:11px;font-family:'Be Vietnam Pro',sans-serif">▾</span></div>
+                        <div style="white-space:nowrap;flex:none;width:36px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px">…</div>
+                      </div>
+                      <span style="padding-left:111px;color:#34d399;font-size:12px;font-family:ui-monospace,Consolas,monospace">✓ 5 frame · HQ1.png … HQ5.png</span>
+                      <div style="height:1px;background:#1c1c22"></div>
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                        <span style="white-space:nowrap;flex:none;width:30px;height:19px;flex:none;border-radius:999px;background:#1a1a20;border:1px solid #2a2a33;display:flex;align-items:center;padding:0 2px"><span style="width:13px;height:13px;border-radius:999px;background:#5c5c68"></span></span>
+                        <span style="width:76px;flex:none;color:#8b8b98;font-size:13px;font-weight:600">Lớp TRƯỚC</span>
+                        <div style="white-space:nowrap;flex:none;flex:1;height:32px;background:#1a1a20;border:1px solid #26262e;border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;color:#5c5c68;font-size:13px;font-family:ui-monospace,Consolas,monospace">blue<span style="font-size:11px;font-family:'Be Vietnam Pro',sans-serif">▾</span></div>
+                        <div style="white-space:nowrap;flex:none;width:36px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #26262e;border-radius:8px;color:#5c5c68;font-size:13px">…</div>
+                      </div>
+                      <span style="padding-left:112px;color:#5c5c68;font-size:12px">tắt — bật công tắc để chọn ảnh lớp trước</span>
+                    </div>
+                  </div>
+
+                  <!-- step 3 -->
+                  <div style="flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;overflow:hidden">
+                    <div style="white-space:nowrap;flex:none;padding:9px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c1c22">
+                      <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">3</span>
+                      <span style="color:#f0f0f4;font-size:14px;font-weight:700">Canh chỉnh &amp; áp vào game</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:12px">ghi .meta của từng lớp</span>
+                    </div>
+                    <div style="white-space:nowrap;flex:none;padding:10px 12px;display:flex;flex-direction:column;gap:9px">
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:10px">
+                        <span style="color:#8b8b98;font-size:13px;flex:none">Đang chỉnh</span>
+                        <div style="white-space:nowrap;flex:none;flex:1;display:flex;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;padding:3px">
+                          <div style="white-space:nowrap;flex:none;flex:1;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:#2f2718;color:#ffc94d;font-size:12px;font-weight:700">Lớp SAU</div>
+                          <div style="white-space:nowrap;flex:none;flex:1;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#5c5c68;font-size:12px;font-weight:600">Lớp TRƯỚC</div>
+                          <div style="white-space:nowrap;flex:none;flex:1;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#8b8b98;font-size:12px;font-weight:600">Cả 2 lớp</div>
+                        </div>
+                      </div>
+
+                      <div style="display:grid;grid-template-columns:64px 1fr 78px;gap:6px 10px;align-items:center">
+                        <span style="color:#c6c6d0;font-size:13px">Scale</span>
+                        <div style="white-space:nowrap;flex:none;position:relative;height:20px;display:flex;align-items:center">
+                          <div style="width:100%;height:4px;border-radius:2px;background:#2a2a33"></div>
+                          <div style="position:absolute;left:0;width:34%;height:4px;border-radius:2px;background:#f0b429"></div>
+                          <div style="position:absolute;left:34%;width:14px;height:14px;margin-left:-7px;border-radius:999px;background:#f0b429;border:2px solid #0d0d10"></div>
+                        </div>
+                        <div style="white-space:nowrap;flex:none;height:30px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">0.67×</div>
+
+                        <span style="color:#c6c6d0;font-size:13px">Offset X</span>
+                        <div style="white-space:nowrap;flex:none;position:relative;height:20px;display:flex;align-items:center">
+                          <div style="width:100%;height:4px;border-radius:2px;background:#2a2a33"></div>
+                          <div style="position:absolute;left:50%;width:8%;height:4px;background:#f0b429"></div>
+                          <div style="position:absolute;left:58%;width:14px;height:14px;margin-left:-7px;border-radius:999px;background:#f0b429;border:2px solid #0d0d10"></div>
+                        </div>
+                        <div style="white-space:nowrap;flex:none;height:30px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">21</div>
+
+                        <span style="color:#c6c6d0;font-size:13px">Offset Y</span>
+                        <div style="white-space:nowrap;flex:none;position:relative;height:20px;display:flex;align-items:center">
+                          <div style="width:100%;height:4px;border-radius:2px;background:#2a2a33"></div>
+                          <div style="position:absolute;left:36%;width:14%;height:4px;background:#f0b429"></div>
+                          <div style="position:absolute;left:36%;width:14px;height:14px;margin-left:-7px;border-radius:999px;background:#f0b429;border:2px solid #0d0d10"></div>
+                        </div>
+                        <div style="white-space:nowrap;flex:none;height:30px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">−35</div>
+                      </div>
+
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                        <span style="color:#8b8b98;font-size:12px;flex:none">Nhanh</span>
+                        <span style="white-space:nowrap;flex:none;height:24px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">×0.5</span>
+                        <span style="white-space:nowrap;flex:none;height:24px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">×0.75</span>
+                        <span style="white-space:nowrap;flex:none;height:24px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">×1</span>
+                        <span style="white-space:nowrap;flex:none;height:24px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">×1.5</span>
+                        <span style="white-space:nowrap;flex:none;height:24px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">×2</span>
+                        <div style="flex:1"></div>
+                        <span style="flex:none;color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">PPU 55.5556</span>
+                      </div>
+
+                      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                        <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.4);border-radius:8px;color:#60a5fa;font-size:13px;font-weight:700">Áp SCALE</div>
+                        <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.4);border-radius:8px;color:#60a5fa;font-size:13px;font-weight:700">Áp VỊ TRÍ</div>
+                        <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px;font-weight:600">Reset</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- step 5 -->
+                  <sc-if value="{{ stepsCollapsed }}" hint-placeholder-val="{{ true }}">
+                  <div style="white-space:nowrap;flex:none;flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+                    <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#8b8b98;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">4</span>
+                    <span style="color:#c6c6d0;font-size:14px;font-weight:600">Nâng cao · thông số + đường dẫn game</span>
+                    <div style="flex:1"></div>
+                    <span style="color:#5c5c68;font-size:11px">▾</span>
+                  </div>
+                  </sc-if>
+                  <sc-if value="{{ stepsExpanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;overflow:hidden">
+                    <div style="white-space:nowrap;flex:none;padding:9px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1c1c22">
+                      <span style="white-space:nowrap;flex:none;width:24px;height:24px;flex:none;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#8b8b98;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">4</span>
+                      <span style="color:#f0f0f4;font-size:14px;font-weight:700">Nâng cao</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:11px">▴</span>
+                    </div>
+                    <div style="white-space:nowrap;flex:none;padding:12px;display:flex;flex-direction:column;gap:8px">
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:10px">
+                        <span style="color:#8b8b98;font-size:12px;width:96px;flex:none">Enum</span>
+                        <span style="flex:1;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">Enum_HaoQuang</span>
+                      </div>
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:10px">
+                        <span style="color:#8b8b98;font-size:12px;width:96px;flex:none">Anim script</span>
+                        <span style="flex:1;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">PlayHaoQuangAnim</span>
+                      </div>
+                      <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:10px">
+                        <span style="color:#8b8b98;font-size:12px;width:96px;flex:none">Prefab</span>
+                        <span style="flex:1;color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">HaoQuang2.prefab</span>
+                      </div>
+                    </div>
+                  </div>
+                  </sc-if>
+
+                </div>
+
+                <div style="white-space:nowrap;flex:none;flex:none;padding:10px 12px;border-top:1px solid #1c1c22;background:#121216;display:flex;flex-direction:column;gap:6px">
+                  <div style="white-space:nowrap;flex:none;height:40px;display:flex;align-items:center;justify-content:center;background:#f0b429;border-radius:9px;color:#151004;font-size:15px;font-weight:800">Tạo / cập nhật cho SM</div>
+                  <span style="color:#5c5c68;font-size:12px;text-align:center;font-family:ui-monospace,Consolas,monospace">ghi vào Enum_HaoQuang · PlayHaoQuangAnim · HaoQuang2</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- annotation dots -->
+        <sc-if value="{{ ann }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:222px;top:950px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">1</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1090px;top:140px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">2</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:520px;top:322px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">3</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1220px;top:202px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">4</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1840px;top:200px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">5</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1390px;top:640px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">6</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1390px;top:900px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">7</span>
+        </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ ann }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;width:1920px;background:#0a0a0d;border:1px solid #1c1c22;border-radius:12px;padding:18px 22px">
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">1</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">4 nút hệ thống to chiếm 1/3 sidebar → 2 nút hay dùng gộp thành 1 hàng ở trên, 2 nút nguy hiểm (Đóng tool / Thoát) đẩy xuống chân, viền đỏ.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">2</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Dòng trạng thái nạp Spine (27 slot · 115 bone…) tách thành chip đọc được thay vì một dòng chữ 11px liền mạch.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">3</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Danh sách id 1 cột dài → lưới ô vuông chia theo dải id, có ô tìm và số kết quả: thấy ~40 id trong 1 tầm mắt thay vì 25.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">4</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Điều khiển xem thử (Chạy · FPS · Lặp · Nằm SAU player) dời lên thanh khung xem — nơi mắt đang nhìn — nên rail phải nhẹ đi một khối; mẹo chuột thành chip ở góc dưới khung.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">5</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Rail Hào Quang chia 4 bước có số theo đúng thứ tự làm việc; bước đã xong gập lại kèm tóm tắt → số control hiện cùng lúc giảm khoảng một nửa và không phải cuộn.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">6</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Mỗi slider có ô số nhập tay bên cạnh; "Scale cả 2 lớp" và "Canh chỉnh từng lớp" gộp thành một bộ với công tắc Đang chỉnh: SAU / TRƯỚC / Cả 2.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">7</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Nút chính ghim đáy rail, luôn thấy khi cuộn; đường dẫn ghi vào game nằm ngay dưới nút.</span></div>
+      </div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <!-- ══════════════════ FRAME 2 · BỐ CỤC MAP ══════════════════ -->
+    <sc-if value="{{ showMap }}" hint-placeholder-val="{{ true }}">
+    <div style="white-space:nowrap;flex:none;display:flex;flex-direction:column;gap:14px;margin-top:26px">
+      <div style="white-space:nowrap;flex:none;display:flex;align-items:baseline;gap:10px">
+        <span style="color:#8b8b98;font-size:12px;font-weight:700;letter-spacing:.18em">MÀN 2</span>
+        <span style="color:#f0f0f4;font-size:16px;font-weight:700">Bố cục Map</span>
+      </div>
+
+      <div style="white-space:nowrap;flex:none;position:relative;width:1920px;height:1080px;background:#060608;border:1px solid #26262e;border-radius:14px;overflow:hidden;display:flex;color:#f0f0f4;font-size:14px">
+
+        <!-- sidebar -->
+        <div style="white-space:nowrap;flex:none;width:240px;flex:none;background:#0a0a0d;border-right:1px solid #1c1c22;padding:20px 14px 16px;display:flex;flex-direction:column">
+          <div style="color:#f0b429;font-size:11px;font-weight:700;letter-spacing:.22em">APEX GAMES</div>
+          <div style="white-space:nowrap;flex:none;margin-top:6px;display:flex;align-items:baseline;gap:7px">
+            <span style="color:#f0f0f4;font-size:19px;font-weight:800;letter-spacing:.01em">ƯỚC RỒNG</span>
+            <span style="color:#f0b429;font-size:19px;font-weight:800">TOOLS</span>
+          </div>
+          <div style="margin-top:9px;width:44px;height:3px;background:#f0b429;border-radius:2px"></div>
+          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:12px;font-weight:600">Toàn màn hình</div>
+            <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:12px;font-weight:600">Khởi động lại</div>
+          </div>
+          <div style="margin-top:22px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">DATABASE</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">MySQL Config</div>
+          </div>
+          <div style="margin-top:16px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">EDITORS</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Map Editor</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Shop</div>
+            <div style="white-space:nowrap;flex:none;position:relative;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;background:#221e11;color:#ffc94d;font-size:14px;font-weight:600">
+              <span style="position:absolute;left:0;top:6px;bottom:6px;width:3px;background:#f0b429;border-radius:2px"></span>Bố cục Map</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Chỉ số trang bị</div>
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Giftcode</div>
+          </div>
+          <div style="margin-top:16px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.2em">SPINE</div>
+          <div style="white-space:nowrap;flex:none;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+            <div style="white-space:nowrap;flex:none;height:36px;display:flex;align-items:center;padding:0 12px;border-radius:8px;color:#c6c6d0;font-size:14px">Player Viewer</div>
+          </div>
+          <div style="flex:1"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.35);border-radius:8px;color:#f87171;font-size:12px;font-weight:600">Đóng tool</div>
+            <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.35);border-radius:8px;color:#f87171;font-size:12px;font-weight:600">Thoát app</div>
+          </div>
+          <div style="white-space:nowrap;flex:none;margin-top:12px;padding-top:12px;border-top:1px solid #1c1c22;display:flex;align-items:center;gap:7px">
+            <span style="width:7px;height:7px;border-radius:999px;background:#34d399"></span>
+            <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">v0.1.0 · 45.119.215.17:3306</span>
+          </div>
+        </div>
+
+        <!-- main -->
+        <div style="white-space:nowrap;flex:none;flex:1;display:flex;flex-direction:column;background:#0d0d10;min-width:0">
+          <div style="white-space:nowrap;flex:none;height:56px;flex:none;background:#0a0a0d;border-bottom:1px solid #1c1c22;display:flex;align-items:center;padding:0 20px 0 24px;gap:14px">
+            <span style="color:#f0f0f4;font-size:16px;font-weight:700">Bố cục Map</span>
+            <span style="color:#2a2a33">/</span>
+            <span style="color:#8b8b98;font-size:13px">Map 1 — Làng Aru</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#8b8b98;font-size:12px">chưa sửa gì</span>
+            <div style="flex:1"></div>
+            <div style="white-space:nowrap;flex:none;display:flex;gap:8px">
+              <div style="white-space:nowrap;flex:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px">⤢</div>
+              <div style="white-space:nowrap;flex:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px">–</div>
+            </div>
+          </div>
+
+          <div style="white-space:nowrap;flex:none;flex:1;display:flex;flex-direction:column;gap:12px;padding:16px 20px 18px;min-height:0">
+
+            <!-- one-row toolbar -->
+            <div style="white-space:nowrap;flex:none;position:relative;flex:none;z-index:5;background:#121216;border:1px solid #26262e;border-radius:10px;height:60px;display:flex;align-items:center;gap:10px;padding:0 14px">
+              <div style="white-space:nowrap;flex:none;width:212px;height:36px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;color:#f0f0f4;font-size:13px;font-weight:600">1 — Làng Aru<span style="color:#5c5c68;font-size:11px">▾</span></div>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 20px;display:flex;align-items:center;background:#f0b429;border-radius:8px;color:#151004;font-size:13px;font-weight:700">Nạp</div>
+              <span style="width:1px;height:24px;background:#2a2a33;margin:0 2px"></span>
+              <div style="white-space:nowrap;flex:none;display:flex;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;padding:3px">
+                <div style="white-space:nowrap;flex:none;height:30px;padding:0 16px;display:flex;align-items:center;border-radius:6px;background:#f0b429;color:#151004;font-size:13px;font-weight:700">Chọn</div>
+                <div style="white-space:nowrap;flex:none;height:30px;padding:0 16px;display:flex;align-items:center;border-radius:6px;color:#8b8b98;font-size:13px;font-weight:600">Di chuyển</div>
+                <div style="white-space:nowrap;flex:none;height:30px;padding:0 16px;display:flex;align-items:center;border-radius:6px;color:#8b8b98;font-size:13px;font-weight:600">Đường kẻ</div>
+                <div style="white-space:nowrap;flex:none;height:30px;padding:0 16px;display:flex;align-items:center;border-radius:6px;color:#8b8b98;font-size:13px;font-weight:600">Biên map</div>
+              </div>
+              <span style="width:1px;height:24px;background:#2a2a33;margin:0 2px"></span>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 12px;display:flex;align-items:center;gap:8px;background:#2f2718;border:1px solid rgba(240,180,41,.45);border-radius:8px;color:#ffc94d;font-size:13px;font-weight:600">Hiện <span style="color:#8b8b98;font-size:12px;font-weight:500">4/6</span> <span style="font-size:10px">▾</span></div>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 12px;display:flex;align-items:center;gap:8px;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Lưới &amp; hít <span style="font-size:10px">▾</span></div>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 12px;display:flex;align-items:center;gap:8px;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Hiệu ứng <span style="font-size:10px">▾</span></div>
+              <div style="flex:1"></div>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 14px;display:flex;align-items:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#c6c6d0;font-size:13px;font-weight:600">Xuất JSON</div>
+              <div style="white-space:nowrap;flex:none;height:36px;padding:0 20px;display:flex;align-items:center;background:#f0b429;border-radius:8px;color:#151004;font-size:13px;font-weight:700">Lưu vào prefab</div>
+              <div style="white-space:nowrap;flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:15px">⋯</div>
+
+              <!-- popover "Hiện" -->
+              <div style="white-space:nowrap;flex:none;position:absolute;top:66px;left:588px;width:268px;background:#17171c;border:1px solid #2a2a33;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:10px;display:flex;flex-direction:column;gap:2px">
+                <div style="padding:6px 8px;color:#5c5c68;font-size:11px;font-weight:700;letter-spacing:.14em">LỚP VẼ</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#f0f0f4;font-size:13px"><span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#f0f0f4;font-size:13px"><span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Collider</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#f0f0f4;font-size:13px"><span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Lưới</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#8b8b98;font-size:13px"><span style="width:16px;height:16px;border-radius:4px;background:#1a1a20;border:1px solid #2a2a33"></span>Chỉ đường đất</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#8b8b98;font-size:13px"><span style="width:16px;height:16px;border-radius:4px;background:#1a1a20;border:1px solid #2a2a33"></span>Xem trước Player</div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#8b8b98;font-size:13px"><span style="width:16px;height:16px;border-radius:4px;background:#1a1a20;border:1px solid #2a2a33"></span>Biên map</div>
+                <div style="margin:6px 0 2px;height:1px;background:#2a2a33"></div>
+                <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:9px;padding:0 8px;border-radius:7px;color:#f0f0f4;font-size:13px"><span style="white-space:nowrap;flex:none;width:16px;height:16px;border-radius:4px;background:#f0b429;color:#151004;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Hiện cả phần đã tắt</div>
+              </div>
+            </div>
+
+            <!-- 3 columns -->
+            <div style="white-space:nowrap;flex:none;flex:1;display:flex;gap:12px;min-height:0">
+
+              <!-- tree -->
+              <div style="white-space:nowrap;flex:none;width:308px;flex:none;background:#121216;border:1px solid #26262e;border-radius:10px;display:flex;flex-direction:column;overflow:hidden">
+                <div style="white-space:nowrap;flex:none;padding:12px 12px 10px;display:flex;flex-direction:column;gap:9px;border-bottom:1px solid #1c1c22">
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;justify-content:space-between">
+                    <span style="color:#8b8b98;font-size:11px;font-weight:700;letter-spacing:.16em">PHẦN TỬ MAP</span>
+                    <span style="color:#5c5c68;font-size:12px">71 phần tử · 6 nhóm</span>
+                  </div>
+                  <div style="white-space:nowrap;flex:none;height:34px;background:#1a1a20;border:1px solid #2a2a33;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 10px;color:#5c5c68;font-size:13px"><span style="font-size:12px">⌕</span>Tìm phần tử, layer, order…</div>
+                </div>
+                <div style="flex:1;overflow:hidden;padding:6px">
+                  <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;gap:8px;padding:0 8px;border-radius:7px;color:#f0f0f4;font-size:13px;font-weight:700"><span style="color:#5c5c68;font-size:10px">▾</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Map_1<span style="color:#5c5c68;font-size:11px;font-weight:500">nhóm</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="color:#5c5c68;font-size:10px">▸</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Layer_0<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">4</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="color:#5c5c68;font-size:10px">▸</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Layer_1<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">9</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="color:#5c5c68;font-size:10px">▸</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Layer_2<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">12</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="color:#5c5c68;font-size:10px">▸</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Layer_3<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">7</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="color:#5c5c68;font-size:10px">▸</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>lop<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">3</span></div>
+                  <div style="white-space:nowrap;flex:none;height:34px;display:flex;align-items:center;gap:8px;padding:0 8px 0 22px;border-radius:7px;color:#f0f0f4;font-size:13px;font-weight:600;background:#15151a"><span style="color:#5c5c68;font-size:10px">▾</span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Layer_Ground<div style="flex:1"></div><span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">36</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_1<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #7</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_1 (2)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #7</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_1 (1)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #10</span></div>
+                  <div style="white-space:nowrap;flex:none;position:relative;height:34px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;background:#2f2718;color:#ffc94d;font-size:13px;font-weight:700"><span style="position:absolute;left:0;top:5px;bottom:5px;width:3px;background:#f0b429;border-radius:2px"></span><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:rgba(240,180,41,.16);border:1px solid rgba(240,180,41,.4);color:#ffc94d;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #6</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (1)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (2)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (3)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (4)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (5)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (6)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (7)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (8)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                  <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;gap:8px;padding:0 8px 0 40px;border-radius:7px;color:#c6c6d0;font-size:13px"><span style="white-space:nowrap;flex:none;width:15px;height:15px;border-radius:4px;background:#f0b429;color:#151004;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">✓</span>Sprite_2 (10)<div style="flex:1"></div><span style="white-space:nowrap;flex:none;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#1a1a20;border:1px solid #26262e;color:#8b8b98;font-size:11px;font-family:ui-monospace,Consolas,monospace">L7 · #5</span></div>
+                </div>
+              </div>
+
+              <!-- canvas -->
+              <div style="flex:1;min-width:0;background:#0a0a0d;border:1px solid #26262e;border-radius:10px;position:relative;overflow:hidden">
+                <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:56px 56px"></div>
+                <div style="white-space:nowrap;flex:none;position:absolute;left:64px;right:64px;top:180px;bottom:190px;border:1px dashed #2a2a33;border-radius:8px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;padding:14px 16px">
+                  <span style="color:#5c5c68;font-size:13px;font-family:ui-monospace,Consolas,monospace">map render</span>
+                  <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">Làng Aru · 71 phần tử</span>
+                </div>
+                <div style="position:absolute;left:340px;top:430px;width:250px;height:150px;border:1px solid #f0b429;border-radius:2px">
+                  <span style="position:absolute;left:-4px;top:-4px;width:7px;height:7px;background:#f0b429"></span>
+                  <span style="position:absolute;right:-4px;top:-4px;width:7px;height:7px;background:#f0b429"></span>
+                  <span style="position:absolute;left:-4px;bottom:-4px;width:7px;height:7px;background:#f0b429"></span>
+                  <span style="position:absolute;right:-4px;bottom:-4px;width:7px;height:7px;background:#f0b429"></span>
+                  <span style="white-space:nowrap;flex:none;position:absolute;left:0;top:-26px;height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;background:#2f2718;border:1px solid rgba(240,180,41,.5);color:#ffc94d;font-size:11px;font-family:ui-monospace,Consolas,monospace">Sprite_2 · L7 #6</span>
+                </div>
+
+                <!-- floating info card -->
+                <div style="white-space:nowrap;flex:none;position:absolute;left:16px;bottom:74px;width:330px;background:rgba(10,10,13,.94);border:1px solid #2a2a33;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:9px">
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                    <span style="color:#f0f0f4;font-size:13px;font-weight:700">Map 1</span>
+                    <span style="white-space:nowrap;flex:none;height:22px;padding:0 8px;display:inline-flex;align-items:center;border-radius:999px;background:#2f2718;border:1px solid rgba(240,180,41,.4);color:#ffc94d;font-size:11px;font-weight:700">chế độ CHỌN</span>
+                    <div style="flex:1"></div>
+                    <span style="color:#5c5c68;font-size:11px;font-family:ui-monospace,Consolas,monospace">zoom 9.9 px/u</span>
+                  </div>
+                  <div style="height:1px;background:#1c1c22"></div>
+                  <div style="display:grid;grid-template-columns:64px 1fr;gap:5px 10px">
+                    <span style="color:#5c5c68;font-size:12px">chuột</span><span style="color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">−22.38, 1.84 unit</span>
+                    <span style="color:#5c5c68;font-size:12px">server</span><span style="color:#c6c6d0;font-size:12px;font-family:ui-monospace,Consolas,monospace">−2238, 184</span>
+                    <span style="color:#5c5c68;font-size:12px">hiệu ứng</span><span style="color:#34d399;font-size:12px;font-family:ui-monospace,Consolas,monospace">t = 305.60s · ×1.00</span>
+                  </div>
+                </div>
+
+                <div style="white-space:nowrap;flex:none;position:absolute;right:16px;bottom:14px;display:flex;gap:8px">
+                  <span style="white-space:nowrap;flex:none;height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:rgba(10,10,13,.9);border:1px solid #2a2a33;color:#8b8b98;font-size:12px">Left / Right / Top / Bottom = biên map</span>
+                  <span style="white-space:nowrap;flex:none;height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:rgba(10,10,13,.9);border:1px solid #2a2a33;color:#8b8b98;font-size:12px;font-family:ui-monospace,Consolas,monospace">6 trigger</span>
+                </div>
+              </div>
+
+              <!-- inspector -->
+              <div style="white-space:nowrap;flex:none;width:352px;flex:none;background:#121216;border:1px solid #26262e;border-radius:10px;display:flex;flex-direction:column;overflow:hidden">
+                <div style="white-space:nowrap;flex:none;height:46px;flex:none;display:flex;align-items:stretch;padding:0 6px;border-bottom:1px solid #1c1c22">
+                  <div style="white-space:nowrap;flex:none;position:relative;display:flex;align-items:center;padding:0 14px;color:#ffc94d;font-size:14px;font-weight:700">Thuộc tính<span style="position:absolute;left:10px;right:10px;bottom:0;height:3px;background:#f0b429;border-radius:2px 2px 0 0"></span></div>
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;padding:0 14px;color:#8b8b98;font-size:14px;font-weight:600">Layer</div>
+                  <div style="white-space:nowrap;flex:none;display:flex;align-items:center;padding:0 14px;color:#8b8b98;font-size:14px;font-weight:600">Hiệu ứng</div>
+                </div>
+
+                <div style="white-space:nowrap;flex:none;flex:1;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:10px">
+                  <div style="white-space:nowrap;flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px">
+                    <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                      <span style="width:7px;height:7px;border-radius:2px;background:#f0b429"></span>
+                      <span style="color:#f0f0f4;font-size:14px;font-weight:700">Sprite_2</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">Layer_Ground</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:82px 1fr;gap:8px 10px;align-items:center">
+                      <span style="color:#8b8b98;font-size:13px">Sorting</span>
+                      <div style="white-space:nowrap;flex:none;height:32px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">7 — Ground<span style="color:#5c5c68;font-size:11px;font-family:'Be Vietnam Pro',sans-serif">▾</span></div>
+                      <span style="color:#8b8b98;font-size:13px">Order</span>
+                      <div style="white-space:nowrap;flex:none;display:flex;gap:8px">
+                        <div style="white-space:nowrap;flex:none;width:74px;height:32px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 10px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace">6<span style="color:#5c5c68;font-size:10px;line-height:1">▴<br>▾</span></div>
+                        <div style="white-space:nowrap;flex:none;width:36px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:7px;color:#c6c6d0;font-size:13px">↑</div>
+                        <div style="white-space:nowrap;flex:none;width:36px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:7px;color:#c6c6d0;font-size:13px">↓</div>
+                      </div>
+                      <span style="color:#8b8b98;font-size:13px">Vị trí</span>
+                      <div style="white-space:nowrap;flex:none;display:flex;gap:8px">
+                        <div style="white-space:nowrap;flex:none;flex:1;height:32px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;gap:7px;padding:0 10px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace"><span style="color:#5c5c68">X</span>−22.38</div>
+                        <div style="white-space:nowrap;flex:none;flex:1;height:32px;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;display:flex;align-items:center;gap:7px;padding:0 10px;color:#f0f0f4;font-size:13px;font-family:ui-monospace,Consolas,monospace"><span style="color:#5c5c68">Y</span>1.84</div>
+                      </div>
+                      <span style="color:#8b8b98;font-size:13px">So với player</span>
+                      <div style="white-space:nowrap;flex:none;display:flex;background:#1a1a20;border:1px solid #2a2a33;border-radius:7px;padding:3px">
+                        <div style="white-space:nowrap;flex:none;flex:1;height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:#2f2718;color:#ffc94d;font-size:12px;font-weight:700">Sau player</div>
+                        <div style="white-space:nowrap;flex:none;flex:1;height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;color:#8b8b98;font-size:12px;font-weight:600">Trước player</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="white-space:nowrap;flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px">
+                    <div style="white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px">
+                      <span style="color:#f0f0f4;font-size:13px;font-weight:700">Vùng &amp; đường kẻ</span>
+                      <div style="flex:1"></div>
+                      <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">7 đường · 6 box</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                      <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:7px;color:#c6c6d0;font-size:12px;font-weight:600">Thêm đường kẻ</div>
+                      <div style="white-space:nowrap;flex:none;height:32px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:7px;color:#c6c6d0;font-size:12px;font-weight:600">Thêm Spine…</div>
+                    </div>
+                  </div>
+
+                  <div style="white-space:nowrap;flex:none;background:#0d0d10;border:1px solid #26262e;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+                    <span style="color:#c6c6d0;font-size:13px;font-weight:600">Sorting layer</span>
+                    <div style="flex:1"></div>
+                    <span style="color:#5c5c68;font-size:12px;font-family:ui-monospace,Consolas,monospace">TagManager · 21 layer</span>
+                    <span style="color:#5c5c68;font-size:11px">▾</span>
+                  </div>
+                </div>
+
+                <div style="white-space:nowrap;flex:none;flex:none;padding:10px 12px;border-top:1px solid #1c1c22;background:#121216;display:flex;flex-direction:column;gap:6px">
+                  <div style="white-space:nowrap;flex:none;display:flex;gap:8px">
+                    <div style="white-space:nowrap;flex:none;flex:1;height:38px;display:flex;align-items:center;justify-content:center;background:#17171c;border:1px solid #2a2a33;border-radius:8px;color:#8b8b98;font-size:13px;font-weight:600">↶ Hoàn tác (0 bước)</div>
+                    <div style="white-space:nowrap;flex:none;width:44px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.4);border-radius:8px;color:#f87171;font-size:14px">⟲</div>
+                  </div>
+                  <span style="color:#5c5c68;font-size:12px;text-align:center">Hoàn tác tất cả nằm riêng, cách xa nút Lưu.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- status bar -->
+            <div style="white-space:nowrap;flex:none;flex:none;height:44px;background:#121216;border:1px solid #26262e;border-radius:10px;display:flex;align-items:center;gap:8px;padding:0 14px">
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">71 phần tử</span>
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">42 renderer</span>
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">7 đường kẻ</span>
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">6 vùng box</span>
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;background:#17171c;border:1px solid #2a2a33;color:#c6c6d0;font-size:12px">6 hiệu ứng</span>
+              <div style="flex:1"></div>
+              <span style="color:#5c5c68;font-size:12px">Chuột phải hoặc Space+trái: pan · Lăn: zoom · Shift: khoá trục · Alt: tạm tắt hít khít</span>
+              <div style="flex:1"></div>
+              <span style="white-space:nowrap;flex:none;height:26px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.35);color:#f0b429;font-size:12px">⚠ 7 nested prefab · 17 block stripped</span>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ ann }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:990px;top:16px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">1</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1190px;top:170px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">2</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1700px;top:16px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">3</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:628px;top:770px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">4</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1010px;top:862px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">5</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:1862px;top:156px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">6</span>
+          <span style="white-space:nowrap;flex:none;position:absolute;left:860px;top:1026px;width:26px;height:26px;border-radius:999px;background:#f0b429;color:#151004;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(240,180,41,.18)">7</span>
+        </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ ann }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;width:1920px;background:#0a0a0d;border:1px solid #1c1c22;border-radius:12px;padding:18px 22px">
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">1</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">3 hàng công cụ (34 control) gộp còn 1 hàng: chọn map → chế độ → 3 menu gộp → nút lưu. Trạng thái quan trọng in ngay trên nút menu (4/6 · 1 · 8px · đang chạy) nên không cần mở ra mới biết.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">2</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Ví dụ menu "Hiện": các checkbox cũ rải ngang giờ xếp dọc, có nhóm và chữ 13px — dễ nhắm chuột hơn hẳn.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">3</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">"Hoàn tác tất cả" (đỏ) không còn nằm cạnh "Lưu vào prefab": các lệnh ít dùng vào menu ⋯, hoàn tác về chân panel phải.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">4</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Cây phần tử: ô tìm, số phần tử mỗi nhóm, badge L7 · #6 căn phải thành cột — quét mắt tìm layer/order nhanh hơn đọc chuỗi "SPR L7#5".</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">5</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Thẻ thông tin nổi thu còn 3 dòng số liệu; phần "chọn: Sprite_2 / layer / trước-sau player" chuyển sang panel phải để sửa được, không chỉ đọc.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">6</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Panel phải mới: sửa Sorting / Order / Vị trí / trước–sau player bằng ô nhập thay vì kéo chuột và đoán.</span></div>
+        <div style="white-space:normal;display:flex;gap:10px"><span style="white-space:nowrap;flex:none;flex:none;width:22px;height:22px;border-radius:999px;background:#221e11;border:1px solid rgba(240,180,41,.45);color:#f0b429;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">7</span><span style="white-space:normal;color:#c6c6d0;font-size:14px;text-wrap:pretty">Thanh dưới: số liệu thành chip, mẹo chuột 1 dòng, cảnh báo prefab tách phải bằng màu amber — trước đây 3 dòng chữ 11px chen nhau.</span></div>
+      </div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cả hai màn&quot;,&quot;Player Viewer&quot;,&quot;Bố cục Map&quot;],&quot;default&quot;:&quot;Cả hai màn&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showAnnotations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;collapseDoneSteps&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const screen = this.props.screen ?? "Cả hai màn";
+    const collapsed = this.props.collapseDoneSteps ?? true;
+    return {
+      showPlayer: screen !== "Bố cục Map",
+      showMap: screen !== "Player Viewer",
+      ann: this.props.showAnnotations ?? true,
+      stepsCollapsed: collapsed,
+      stepsExpanded: !collapsed
+    };
+  }
+}
+</script>
+</body>
+</html>

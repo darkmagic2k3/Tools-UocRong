@@ -76,9 +76,24 @@ public final class ToolConfig {
         return Paths.get(clientRepo(), clientAssets());
     }
 
-    /** File cache GUID index (cạnh thư mục chạy tool). */
+    /**
+     * File cache GUID index — NEO vào thư mục tool, KHÔNG theo thư mục làm việc.
+     *
+     * <p>Trước đây trả path tương đối "guid-index.cache" nên chạy tool từ trong repo client
+     * (vd cd vào đó rồi gọi java -cp) sẽ ném file cache vào repo client — đúng thứ tool cam kết
+     * không bao giờ đụng tới. Neo theo vị trí jar: target/*.jar hoặc target/classes → lùi lên gốc tool.
+     */
     public Path guidCacheFile() {
-        return Paths.get("guid-index.cache");
+        Path dir = jarDir();
+        if (dir != null) {
+            // target/classes → lùi 2 cấp; target/ (chứa jar) → lùi 1 cấp; nơi khác → dùng luôn
+            if (dir.getFileName() != null && dir.getFileName().toString().equals("classes")
+                    && dir.getParent() != null) dir = dir.getParent();
+            if (dir.getFileName() != null && dir.getFileName().toString().equals("target")
+                    && dir.getParent() != null) dir = dir.getParent();
+            return dir.resolve("guid-index.cache");
+        }
+        return Paths.get("guid-index.cache").toAbsolutePath();
     }
 
     public Path mapPrefab(int mapId) {
